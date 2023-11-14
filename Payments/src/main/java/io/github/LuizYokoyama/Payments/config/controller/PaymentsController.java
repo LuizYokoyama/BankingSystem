@@ -14,6 +14,7 @@ public class PaymentsController {
     @ApiResponses({ @ApiResponse(responseCode = "200", description = "The list was found and returned.")})
     @GetMapping("payments")
     public String getPayments() {
+        //TODO
         return "Payments test list ...";
 
     }
@@ -22,6 +23,7 @@ public class PaymentsController {
     @ApiResponses({ @ApiResponse(responseCode = "200", description = "The order was posted and executed.")})
     @PostMapping("execute_scheduled_payments")
     public String executeScheduledPayments() {
+        //TODO
         return "Payments test executed ok";
 
     }

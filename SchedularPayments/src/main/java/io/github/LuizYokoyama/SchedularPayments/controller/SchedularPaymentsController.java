@@ -14,6 +14,7 @@ public class SchedularPaymentsController {
     @ApiResponses({ @ApiResponse(responseCode = "200", description = "The order has been posted and the recurring payment created.")})
     @PostMapping("create_scheduled_payment")
     public String createScheduledPayment() {
+        //TODO
         return "Recurrence payment test CREATED OK";
 
     }
@@ -22,6 +23,7 @@ public class SchedularPaymentsController {
     @ApiResponses({ @ApiResponse(responseCode = "200", description = "The recurring payment edited OK.")})
     @PutMapping("edit_scheduled_payment")
     public String editScheduledPayment() {
+        //TODO
         return "Recurrence payment test EDITED OK";
 
     }
@@ -30,6 +32,7 @@ public class SchedularPaymentsController {
     @ApiResponses({ @ApiResponse(responseCode = "200", description = "The scheduled payment was canceled.")})
     @PutMapping("cancel_scheduled_payment")
     public String cancelScheduledPayments() {
+        //TODO
         return "Recurrence payment test CANCELED OK";
 
     }

@@ -1,12 +1,10 @@
 package io.github.LuizYokoyama.BankAccount.dto;
 
-import io.github.LuizYokoyama.BankAccount.entity.AccountEntity;
 import io.github.LuizYokoyama.BankAccount.entity.EntryStatus;
 import io.github.LuizYokoyama.BankAccount.entity.OperationType;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -25,7 +23,7 @@ public class EntryDto {
 
     private float value;
 
-    private LocalDate entryDate;
+    private LocalDateTime entryDateTime;
 
     private EntryStatus entryStatus;
 

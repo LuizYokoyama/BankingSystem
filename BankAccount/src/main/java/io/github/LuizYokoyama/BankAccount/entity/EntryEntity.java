@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -35,7 +36,7 @@ public class EntryEntity {
     private float value;
 
     @Column(name = "entry_date", nullable = false)
-    private LocalDate entryDate;
+    private LocalDateTime entryDateTime;
 
     @Column(name = "status", nullable = false)
     private EntryStatus entryStatus;

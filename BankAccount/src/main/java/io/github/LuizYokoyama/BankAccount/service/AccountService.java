@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +23,7 @@ import java.util.Optional;
 @Validated
 public class AccountService {
 
+    private static final float MIN_DEPOSIT_VALUE = 0.01f;
     @Autowired
     private AccountRepository accountRepository;
 
@@ -45,6 +46,10 @@ public class AccountService {
     @Transactional
     public ResponseEntity<EntryDto> deposit(Integer id, DepositDto depositDto) {
 
+        if (depositDto.getValue() < MIN_DEPOSIT_VALUE){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
         Optional<AccountEntity> accountEntityOptional = accountRepository.findById(id);
         if (!accountEntityOptional.isPresent()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
@@ -56,7 +61,7 @@ public class AccountService {
 
         EntryEntity entryEntity = new EntryEntity();
         entryEntity.setAccountEntity(accountEntity);
-        entryEntity.setEntryDate(LocalDate.now());
+        entryEntity.setEntryDateTime(LocalDateTime.now());
         entryEntity.setValue(depositDto.getValue());
         entryEntity.setOperationType(OperationType.CREDIT);
         entryEntity.setEntryStatus(EntryStatus.DONE);
@@ -78,7 +83,9 @@ public class AccountService {
         }
         AccountCreatedDto accountCreatedDto = new AccountCreatedDto();
         BeanUtils.copyProperties(accountEntityOptional.get(), accountCreatedDto);
-        List<EntryDto> entryList = entryRepository.getStatement(id, periodDto.getInitDate(), periodDto.getEndDate());
+        List<EntryDto> entryList = entryRepository.getStatement(id,
+                periodDto.getInitDate().atTime(0, 0, 0),
+                periodDto.getEndDate().atTime(0, 0, 0));
         BankStatementDto bankStatementDto = new BankStatementDto(accountCreatedDto, periodDto, entryList);
         return  ResponseEntity.status(HttpStatus.OK).body(bankStatementDto);
     }

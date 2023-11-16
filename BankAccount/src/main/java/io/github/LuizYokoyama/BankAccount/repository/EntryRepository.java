@@ -8,14 +8,15 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 @Repository("entryRepository")
 public interface EntryRepository extends JpaRepository<EntryEntity, UUID> {
 
-    @Query("SELECT new io.github.LuizYokoyama.BankAccount.dto.EntryDto(e.entryId, :id, e.operationType, e.value, e.entryDate, e.entryStatus)" +
-            "FROM EntryEntity e WHERE e.accountEntity.accountId = :id AND e.entryDate >= :initDate AND e.entryDate <= :endDate")
-    List<EntryDto> getStatement(@Param("id") Integer id, @Param("initDate") LocalDate initDate, @Param("endDate") LocalDate endDate);
+    @Query("SELECT new io.github.LuizYokoyama.BankAccount.dto.EntryDto(e.entryId, :id, e.operationType, e.value, e.entryDateTime, e.entryStatus)" +
+            "FROM EntryEntity e WHERE e.accountEntity.accountId = :id AND e.entryDateTime >= :initDate AND e.entryDateTime <= :endDate")
+    List<EntryDto> getStatement(@Param("id") Integer id, @Param("initDate") LocalDateTime initDate, @Param("endDate") LocalDateTime endDate);
 
 }

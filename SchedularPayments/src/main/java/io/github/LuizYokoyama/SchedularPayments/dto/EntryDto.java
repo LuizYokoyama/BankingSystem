@@ -19,6 +19,8 @@ public class EntryDto {
 
     private Integer accountId;
 
+    private Integer originId;
+
     private OperationType operationType;
 
     private float value;

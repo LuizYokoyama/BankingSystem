@@ -29,6 +29,11 @@ public class EntryEntity {
     @JoinColumn(name = "account_id")
     private AccountEntity accountEntity;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
+    @JoinColumn(name = "origin_id")
+    private AccountEntity originEntity;
+
     @Column(name = "operation_type", nullable = false)
     private OperationType operationType;
 

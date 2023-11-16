@@ -16,6 +16,8 @@ import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.Optional;
 
 @Service
@@ -39,24 +41,43 @@ public class SchedularService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
 
+        if (createRecurrenceDto.getOccurrenceDate().isBefore(LocalDate.now())){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
         Optional<AccountEntity> accountEntityOptional = accountRepository.findById(createRecurrenceDto.getAccountId());
         if (!accountEntityOptional.isPresent()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
 
-        if (createRecurrenceDto.getOccurrenceDate().getMonth() == LocalDate.now().getMonth()){
+        Optional<AccountEntity> accountDestinationEntityOptional = accountRepository.findById(createRecurrenceDto.getAccountDestinationID());
+        if (!accountDestinationEntityOptional.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
 
-            createRecurrenceDto.setDuration(createRecurrenceDto.getDuration() - 1);
+        for (int i = 0; i < createRecurrenceDto.getDuration(); i++){
 
-            EntryEntity entryEntity = new EntryEntity();
-            entryEntity.setAccountEntity(accountEntityOptional.get());
-            entryEntity.setEntryDateTime(LocalDateTime.now());
-            entryEntity.setValue(createRecurrenceDto.getValue());
-            entryEntity.setOperationType(OperationType.DEBIT);
-            entryEntity.setEntryStatus(EntryStatus.PENDING);
-            entryEntity = entryRepository.save(entryEntity);
+            LocalDateTime entryDate = createRecurrenceDto.getOccurrenceDate().plusMonths(i).atTime(0, 0);
 
-            createRecurrenceDto.getAccountDestinationID();
+            // CREDIT
+            EntryEntity entryEntityToCredit = new EntryEntity();
+            entryEntityToCredit.setAccountEntity(accountDestinationEntityOptional.get()); //will receive the amount
+            entryEntityToCredit.setOriginEntity(accountEntityOptional.get()); //will send the amount
+            entryEntityToCredit.setEntryDateTime(entryDate);
+            entryEntityToCredit.setValue(createRecurrenceDto.getValue());
+            entryEntityToCredit.setOperationType(OperationType.CREDIT);
+            entryEntityToCredit.setEntryStatus(EntryStatus.PENDING);
+            entryEntityToCredit = entryRepository.save(entryEntityToCredit);
+
+            // DEBIT
+            EntryEntity entryEntityToDebit = new EntryEntity();
+            entryEntityToDebit.setAccountEntity(accountEntityOptional.get()); //will send the amount
+            entryEntityToDebit.setOriginEntity(accountDestinationEntityOptional.get()); //will receive the amount
+            entryEntityToDebit.setEntryDateTime(entryDate);
+            entryEntityToDebit.setValue(createRecurrenceDto.getValue());
+            entryEntityToDebit.setOperationType(OperationType.DEBIT);
+            entryEntityToDebit.setEntryStatus(EntryStatus.PENDING);
+            entryEntityToDebit = entryRepository.save(entryEntityToDebit);
 
         }
 

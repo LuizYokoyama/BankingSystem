@@ -85,7 +85,7 @@ public class AccountService {
         BeanUtils.copyProperties(accountEntityOptional.get(), accountCreatedDto);
         List<EntryDto> entryList = entryRepository.getStatement(id,
                 periodDto.getInitDate().atTime(0, 0, 0),
-                periodDto.getEndDate().atTime(0, 0, 0));
+                periodDto.getEndDate().atTime(23, 59, 59));
         BankStatementDto bankStatementDto = new BankStatementDto(accountCreatedDto, periodDto, entryList);
         return  ResponseEntity.status(HttpStatus.OK).body(bankStatementDto);
     }

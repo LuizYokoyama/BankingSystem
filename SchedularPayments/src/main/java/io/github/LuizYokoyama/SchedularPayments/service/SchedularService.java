@@ -1,6 +1,7 @@
 package io.github.LuizYokoyama.SchedularPayments.service;
 
 import io.github.LuizYokoyama.SchedularPayments.dto.CreateRecurrenceDto;
+import io.github.LuizYokoyama.SchedularPayments.dto.EditRecurrenceDto;
 import io.github.LuizYokoyama.SchedularPayments.dto.EntryDto;
 import io.github.LuizYokoyama.SchedularPayments.dto.RecurrenceDto;
 import io.github.LuizYokoyama.SchedularPayments.entity.*;
@@ -108,8 +109,52 @@ public class SchedularService {
         return ResponseEntity.status(HttpStatus.CREATED).body(recurrenceDto);
     }
 
-    public ResponseEntity<RecurrenceDto> editScheduled(UUID uuid, CreateRecurrenceDto createRecurrenceDto) {
+    public ResponseEntity<RecurrenceDto> editScheduled(UUID uuid, EditRecurrenceDto editRecurrenceDto) {
 
+        Optional<RecurrenceEntity> recurrenceEntityOptional = recurrenceRepository.findById(uuid);
+        if (!recurrenceEntityOptional.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        RecurrenceEntity recurrenceEntity = recurrenceEntityOptional.get();
+
+        if (recurrenceEntity.getRecurrenceStatus() == RecurrenceStatus.CANCELED ||
+                recurrenceEntity.getRecurrenceStatus() == RecurrenceStatus.DONE ||
+                recurrenceEntity.getRecurrenceStatus() == RecurrenceStatus.PARTLY_CANCELED){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
+        if (recurrenceEntity.getValue() == editRecurrenceDto.getValue() &&
+                recurrenceEntity.getDuration() == editRecurrenceDto.getDuration() &
+                recurrenceEntity.getOccurrenceDate() == editRecurrenceDto.getOccurrenceDate()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
+        if (editRecurrenceDto.getValue() == 0){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
+        if (editRecurrenceDto.getOccurrenceDate().isBefore(LocalDate.now())){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
+        AccountEntity accountEntity = recurrenceEntity.getAccountEntity();
+
+        AccountEntity accountDestinationEntity = recurrenceEntity.getAccountDestination();
+
+
+
+        recurrenceEntity.setRecurrenceStatus(RecurrenceStatus.PENDING);
+        recurrenceEntity = recurrenceRepository.save(recurrenceEntity);
+
+
+        recurrenceEntity = recurrenceRepository.save(recurrenceEntity);
+
+        RecurrenceDto recurrenceDto = new RecurrenceDto();
+        BeanUtils.copyProperties(recurrenceEntity, recurrenceDto);
+
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(recurrenceDto);
 
     }
 }

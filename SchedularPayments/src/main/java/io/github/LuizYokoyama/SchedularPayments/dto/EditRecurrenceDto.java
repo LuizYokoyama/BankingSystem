@@ -3,22 +3,18 @@ package io.github.LuizYokoyama.SchedularPayments.dto;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class CreateRecurrenceDto {
-
-    @Positive
-    private int accountId;
-
-    @NotNull
-    private String recurrenceName;
+public class EditRecurrenceDto {
 
     @NotNull
     private LocalDate occurrenceDate;
@@ -29,8 +25,5 @@ public class CreateRecurrenceDto {
 
     @Positive
     private float value;
-
-    @Positive
-    private int accountDestinationID;
 
 }

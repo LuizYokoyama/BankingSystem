@@ -2,9 +2,10 @@ package io.github.LuizYokoyama.BankAccount.entity;
 
 public enum RecurrenceStatus {
 
-    CANCELED,
-    PARTLY_MADE,
+    CANCELED, //fully canceled
+    PARTLY_DONE,
     PENDING,
-    DONE;
+    DONE,
+    PARTLY_CANCELED;
 
 }

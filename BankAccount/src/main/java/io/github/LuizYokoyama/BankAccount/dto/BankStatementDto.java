@@ -1,5 +1,6 @@
 package io.github.LuizYokoyama.BankAccount.dto;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,5 +15,6 @@ import java.util.List;
 public class BankStatementDto {
     private AccountCreatedDto accountCreatedDto;
     private PeriodDto periodDto;
+    @Valid
     private List<EntryDto> entryList;
 }

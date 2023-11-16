@@ -1,5 +1,6 @@
 package io.github.LuizYokoyama.BankAccount.dto;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -28,5 +29,6 @@ public class AccountDto {
 
     private Set<RecurrenceDto> recurrenceList;
 
+    @Valid
     private Set<EntryDto> entryList;
 }

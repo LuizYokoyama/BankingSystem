@@ -33,7 +33,7 @@ public class BankAccountController {
 
     }
 
-    @Operation(summary = "Get the Bank statement.")
+    @Operation(summary = "Get the Bank statement. Idempotent operation")
     @ApiResponses({ @ApiResponse(responseCode = "200", description = "The bank statement was found and returned.")})
     @PutMapping("statement/{account_id}")
     public ResponseEntity<BankStatementDto> statement(@PathVariable(value = "account_id") Integer id, @RequestBody PeriodDto periodDto) {

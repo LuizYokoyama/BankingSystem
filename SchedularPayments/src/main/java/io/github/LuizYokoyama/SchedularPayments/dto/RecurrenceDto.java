@@ -1,11 +1,5 @@
-package io.github.LuizYokoyama.BankAccount.dto;
+package io.github.LuizYokoyama.SchedularPayments.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.github.LuizYokoyama.BankAccount.entity.AccountEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import lombok.*;
 
 import java.time.LocalDate;

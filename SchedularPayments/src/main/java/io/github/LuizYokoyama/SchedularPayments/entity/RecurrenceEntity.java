@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -23,7 +24,7 @@ public class RecurrenceEntity {
     @EqualsAndHashCode.Include
     private UUID id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     @JoinColumn(name = "account_id")
     private AccountEntity accountEntity;
@@ -44,5 +45,12 @@ public class RecurrenceEntity {
     @JsonIgnore
     @JoinColumn(name = "account_destination_id")
     private AccountEntity accountDestination;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name = "recurrence_id")
+    private Set<EntryEntity> entrySet;
+
+    @Column(name = "status", nullable = false)
+    private RecurrenceStatus recurrenceStatus;
 
 }

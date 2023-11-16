@@ -8,10 +8,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 public class SchedularPaymentsController {
@@ -30,10 +29,10 @@ public class SchedularPaymentsController {
 
     @Operation(summary = "Put order to EDIT the scheduled payment.")
     @ApiResponses({ @ApiResponse(responseCode = "200", description = "The scheduled payment edited OK.")})
-    @PutMapping("edit_scheduled_payment")
-    public String editScheduledPayment() {
+    @PutMapping("edit_scheduled_payment/{recurrece_id}")
+    public ResponseEntity<RecurrenceDto> editScheduledPayment(@PathVariable(value = "recurrece_id") UUID uuid, @RequestBody CreateRecurrenceDto createRecurrenceDto) {
         //TODO
-        return "Recurrence payment test EDITED OK";
+        return schedularService.editScheduled(uuid, createRecurrenceDto);
 
     }
 

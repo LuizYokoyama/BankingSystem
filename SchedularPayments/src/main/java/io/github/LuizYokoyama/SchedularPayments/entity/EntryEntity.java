@@ -33,6 +33,11 @@ public class EntryEntity {
     @JoinColumn(name = "origin_id")
     private AccountEntity originEntity;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
+    @JoinColumn(name = "recurrence_id")
+    private RecurrenceEntity recurrenceEntity;
+
     @Column(name = "operation_type", nullable = false)
     private OperationType operationType;
 

@@ -2,13 +2,16 @@ package io.github.LuizYokoyama.BankAccount.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.LuizYokoyama.BankAccount.entity.AccountEntity;
+import io.github.LuizYokoyama.BankAccount.entity.RecurrenceStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import jakarta.validation.Valid;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.Set;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -33,4 +36,5 @@ public class RecurrenceDto {
 
     private int accountDestinationID;
 
+    private RecurrenceStatus recurrenceStatus;
 }

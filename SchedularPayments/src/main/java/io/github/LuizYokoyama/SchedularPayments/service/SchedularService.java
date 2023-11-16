@@ -1,6 +1,7 @@
 package io.github.LuizYokoyama.SchedularPayments.service;
 
 import io.github.LuizYokoyama.SchedularPayments.dto.CreateRecurrenceDto;
+import io.github.LuizYokoyama.SchedularPayments.dto.EntryDto;
 import io.github.LuizYokoyama.SchedularPayments.dto.RecurrenceDto;
 import io.github.LuizYokoyama.SchedularPayments.entity.*;
 import io.github.LuizYokoyama.SchedularPayments.repository.AccountRepository;
@@ -18,7 +19,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 @Validated
@@ -55,12 +59,22 @@ public class SchedularService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
 
+        RecurrenceEntity recurrenceEntity = new RecurrenceEntity();
+        BeanUtils.copyProperties(createRecurrenceDto, recurrenceEntity);
+        recurrenceEntity.setAccountEntity(accountEntityOptional.get());
+        recurrenceEntity.setAccountDestination(accountDestinationEntityOptional.get());
+        recurrenceEntity.setRecurrenceStatus(RecurrenceStatus.PENDING);
+        recurrenceEntity = recurrenceRepository.save(recurrenceEntity);
+
+        Set<EntryEntity> entrySet = new HashSet<>();
+
         for (int i = 0; i < createRecurrenceDto.getDuration(); i++){
 
             LocalDateTime entryDate = createRecurrenceDto.getOccurrenceDate().plusMonths(i).atTime(0, 0);
 
             // CREDIT
             EntryEntity entryEntityToCredit = new EntryEntity();
+            entryEntityToCredit.setRecurrenceEntity(recurrenceEntity);
             entryEntityToCredit.setAccountEntity(accountDestinationEntityOptional.get()); //will receive the amount
             entryEntityToCredit.setOriginEntity(accountEntityOptional.get()); //will send the amount
             entryEntityToCredit.setEntryDateTime(entryDate);
@@ -68,9 +82,11 @@ public class SchedularService {
             entryEntityToCredit.setOperationType(OperationType.CREDIT);
             entryEntityToCredit.setEntryStatus(EntryStatus.PENDING);
             entryEntityToCredit = entryRepository.save(entryEntityToCredit);
+            entrySet.add(entryEntityToCredit);
 
             // DEBIT
             EntryEntity entryEntityToDebit = new EntryEntity();
+            entryEntityToDebit.setRecurrenceEntity(recurrenceEntity);
             entryEntityToDebit.setAccountEntity(accountEntityOptional.get()); //will send the amount
             entryEntityToDebit.setOriginEntity(accountDestinationEntityOptional.get()); //will receive the amount
             entryEntityToDebit.setEntryDateTime(entryDate);
@@ -78,19 +94,22 @@ public class SchedularService {
             entryEntityToDebit.setOperationType(OperationType.DEBIT);
             entryEntityToDebit.setEntryStatus(EntryStatus.PENDING);
             entryEntityToDebit = entryRepository.save(entryEntityToDebit);
+            entrySet.add(entryEntityToDebit);
 
         }
-
-
-        RecurrenceEntity recurrenceEntity = new RecurrenceEntity();
-        BeanUtils.copyProperties(createRecurrenceDto, recurrenceEntity);
+        recurrenceEntity.setEntrySet(entrySet);
         recurrenceEntity = recurrenceRepository.save(recurrenceEntity);
-
-
 
         RecurrenceDto recurrenceDto = new RecurrenceDto();
         BeanUtils.copyProperties(recurrenceEntity, recurrenceDto);
+        recurrenceDto.setAccountId(createRecurrenceDto.getAccountId());
+        recurrenceDto.setAccountDestinationID(createRecurrenceDto.getAccountDestinationID());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(recurrenceDto);
+    }
+
+    public ResponseEntity<RecurrenceDto> editScheduled(UUID uuid, CreateRecurrenceDto createRecurrenceDto) {
+
+
     }
 }

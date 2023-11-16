@@ -1,18 +1,22 @@
 package io.github.LuizYokoyama.BankAccount.service;
 
-import io.github.LuizYokoyama.BankAccount.dto.AccountCreatedDto;
-import io.github.LuizYokoyama.BankAccount.dto.AccountDto;
-import io.github.LuizYokoyama.BankAccount.dto.CreateAccountDto;
-import io.github.LuizYokoyama.BankAccount.dto.DepositDto;
+import io.github.LuizYokoyama.BankAccount.dto.*;
 import io.github.LuizYokoyama.BankAccount.entity.AccountEntity;
+import io.github.LuizYokoyama.BankAccount.entity.EntryEntity;
+import io.github.LuizYokoyama.BankAccount.entity.EntryStatus;
+import io.github.LuizYokoyama.BankAccount.entity.OperationType;
 import io.github.LuizYokoyama.BankAccount.repository.AccountRepository;
+import io.github.LuizYokoyama.BankAccount.repository.EntryRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -21,6 +25,9 @@ public class AccountService {
 
     @Autowired
     private AccountRepository accountRepository;
+
+    @Autowired
+    private EntryRepository entryRepository;
 
     public ResponseEntity<AccountCreatedDto> createAccount(CreateAccountDto accountDto){
 
@@ -35,19 +42,44 @@ public class AccountService {
         return ResponseEntity.status(HttpStatus.CREATED).body(accountCreatedDto);
     }
 
-    public ResponseEntity<AccountCreatedDto> deposit(Integer id, DepositDto depositDto) {
+    @Transactional
+    public ResponseEntity<EntryDto> deposit(Integer id, DepositDto depositDto) {
 
         Optional<AccountEntity> accountEntityOptional = accountRepository.findById(id);
         if (!accountEntityOptional.isPresent()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
+
         AccountEntity accountEntity = accountEntityOptional.get();
         accountEntity.setBalance(accountEntity.getBalance() + depositDto.getValue());
         accountEntity = accountRepository.save(accountEntity);
 
-        AccountCreatedDto accountCreatedDto = new AccountCreatedDto();
-        BeanUtils.copyProperties(accountEntity, accountCreatedDto);
-        return ResponseEntity.status(HttpStatus.OK).body(accountCreatedDto);
+        EntryEntity entryEntity = new EntryEntity();
+        entryEntity.setAccountEntity(accountEntity);
+        entryEntity.setEntryDate(LocalDate.now());
+        entryEntity.setValue(depositDto.getValue());
+        entryEntity.setOperationType(OperationType.CREDIT);
+        entryEntity.setEntryStatus(EntryStatus.DONE);
+        entryEntity = entryRepository.save(entryEntity);
 
+        EntryDto entryDto = new EntryDto();
+        BeanUtils.copyProperties(entryEntity, entryDto);
+        entryDto.setAccountId(entryEntity.getAccountEntity().getAccountId());
+
+        return ResponseEntity.status(HttpStatus.OK).body(entryDto);
+
+    }
+
+    public ResponseEntity<BankStatementDto> statement(Integer id, PeriodDto periodDto) {
+
+        Optional<AccountEntity> accountEntityOptional = accountRepository.findById(id);
+        if ( !accountEntityOptional.isPresent() ){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        AccountCreatedDto accountCreatedDto = new AccountCreatedDto();
+        BeanUtils.copyProperties(accountEntityOptional.get(), accountCreatedDto);
+        List<EntryDto> entryList = entryRepository.getStatement(id, periodDto.getInitDate(), periodDto.getEndDate());
+        BankStatementDto bankStatementDto = new BankStatementDto(accountCreatedDto, periodDto, entryList);
+        return  ResponseEntity.status(HttpStatus.OK).body(bankStatementDto);
     }
 }

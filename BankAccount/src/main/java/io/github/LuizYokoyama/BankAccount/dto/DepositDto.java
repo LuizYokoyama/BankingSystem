@@ -1,9 +1,6 @@
 package io.github.LuizYokoyama.BankAccount.dto;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 @NoArgsConstructor
@@ -12,8 +9,7 @@ import lombok.*;
 @Setter
 public class DepositDto {
 
-    @NotBlank(message = "Forneça o valor!")
-    @Positive(message = "O valor deve ser positivo!")
+    @Positive(message = "Forneça um valor positivo positivo!")
     private float value;
 
 }

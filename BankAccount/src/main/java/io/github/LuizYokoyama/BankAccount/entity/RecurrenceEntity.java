@@ -40,7 +40,7 @@ public class RecurrenceEntity {
     @Column(name = "value", nullable = false)
     private float value;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     @JoinColumn(name = "account_destination_id")
     private AccountEntity accountDestination;

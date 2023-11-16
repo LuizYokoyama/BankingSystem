@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -22,7 +23,7 @@ public class EntryEntity {
     @EqualsAndHashCode.Include
     private UUID entryId;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     @JoinColumn(name = "account_id")
     private AccountEntity accountEntity;
@@ -32,6 +33,9 @@ public class EntryEntity {
 
     @Column(name = "value", nullable = false)
     private float value;
+
+    @Column(name = "entry_date", nullable = false)
+    private LocalDate entryDate;
 
     @Column(name = "status", nullable = false)
     private EntryStatus entryStatus;

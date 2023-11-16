@@ -1,9 +1,6 @@
 package io.github.LuizYokoyama.BankAccount.controller;
 
-import io.github.LuizYokoyama.BankAccount.dto.AccountCreatedDto;
-import io.github.LuizYokoyama.BankAccount.dto.AccountDto;
-import io.github.LuizYokoyama.BankAccount.dto.CreateAccountDto;
-import io.github.LuizYokoyama.BankAccount.dto.DepositDto;
+import io.github.LuizYokoyama.BankAccount.dto.*;
 import io.github.LuizYokoyama.BankAccount.service.AccountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -30,18 +27,18 @@ public class BankAccountController {
     @Operation(summary = "Put order to deposit the amount in the account.")
     @ApiResponses({ @ApiResponse(responseCode = "200", description = "The deposit was executed OK.")})
     @PutMapping("deposit/{account_id}")
-    public ResponseEntity<AccountCreatedDto> deposit(@PathVariable(value = "account_id") Integer id, @RequestBody DepositDto depositDto) {
+    public ResponseEntity<EntryDto> deposit(@PathVariable(value = "account_id") Integer id, @RequestBody DepositDto depositDto) {
 
         return accountService.deposit(id, depositDto);
 
     }
 
     @Operation(summary = "Get the Bank statement.")
-    @ApiResponses({ @ApiResponse(responseCode = "200", description = "The Bank statement was found.")})
-    @GetMapping("statement")
-    public String statement() {
-        //TODO
-        return "Bank statement test OK";
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "The bank statement was found and returned.")})
+    @PutMapping("statement/{account_id}")
+    public ResponseEntity<BankStatementDto> statement(@PathVariable(value = "account_id") Integer id, @RequestBody PeriodDto periodDto) {
+
+        return accountService.statement(id, periodDto);
 
     }
 

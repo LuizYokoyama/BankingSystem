@@ -2,7 +2,6 @@ package io.github.LuizYokoyama.SchedularPayments.service;
 
 import io.github.LuizYokoyama.SchedularPayments.dto.CreateRecurrenceDto;
 import io.github.LuizYokoyama.SchedularPayments.dto.EditRecurrenceDto;
-import io.github.LuizYokoyama.SchedularPayments.dto.EntryDto;
 import io.github.LuizYokoyama.SchedularPayments.dto.RecurrenceDto;
 import io.github.LuizYokoyama.SchedularPayments.entity.*;
 import io.github.LuizYokoyama.SchedularPayments.repository.AccountRepository;
@@ -18,8 +17,6 @@ import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -109,6 +106,7 @@ public class SchedularService {
         return ResponseEntity.status(HttpStatus.CREATED).body(recurrenceDto);
     }
 
+    @Transactional
     public ResponseEntity<RecurrenceDto> editScheduled(UUID uuid, EditRecurrenceDto editRecurrenceDto) {
 
         if (editRecurrenceDto.getValue() == 0){
@@ -193,6 +191,7 @@ public class SchedularService {
 
     }
 
+    @Transactional
     public ResponseEntity<RecurrenceDto> cancelScheduledPayment(UUID uuid) {
 
         Optional<RecurrenceEntity> recurrenceEntityOptional = recurrenceRepository.findById(uuid);

@@ -30,6 +30,7 @@ public class AccountService {
     @Autowired
     private EntryRepository entryRepository;
 
+    @Transactional
     public ResponseEntity<AccountCreatedDto> createAccount(CreateAccountDto accountDto){
 
         AccountEntity accountEntity = new AccountEntity();

@@ -1,4 +1,4 @@
-package io.github.LuizYokoyama.Payments.config.controller;
+package io.github.LuizYokoyama.Payments.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

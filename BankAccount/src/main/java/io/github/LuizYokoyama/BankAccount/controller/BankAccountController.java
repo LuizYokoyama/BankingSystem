@@ -10,33 +10,34 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("v1")
 public class BankAccountController {
 
     @Autowired
     AccountService accountService;
 
-    @Operation(summary = "Post order to CREATE a new bank account.")
-    @ApiResponses({ @ApiResponse(responseCode = "201", description = "The order has been posted and the account was created OK.")})
-    @PostMapping("create_bank_account")
+    @Operation(summary = "CREATE a new bank account.")
+    @ApiResponses({ @ApiResponse(responseCode = "201", description = "The account was created OK.")})
+    @PostMapping("accounts")
     public ResponseEntity<AccountCreatedDto> createAccount(@RequestBody CreateAccountDto createAccountDto) {
 
         return accountService.createAccount(createAccountDto);
 
     }
 
-    @Operation(summary = "Put order to deposit the amount in the account.")
+    @Operation(summary = "deposit the amount in the account.")
     @ApiResponses({ @ApiResponse(responseCode = "200", description = "The deposit was executed OK.")})
-    @PutMapping("deposit/{account_id}")
-    public ResponseEntity<EntryDto> deposit(@PathVariable(value = "account_id") Integer id, @RequestBody DepositDto depositDto) {
+    @PutMapping("accounts/{id}")
+    public ResponseEntity<EntryDto> deposit(@PathVariable(value = "id") Integer id, @RequestBody DepositDto depositDto) {
 
         return accountService.deposit(id, depositDto);
 
     }
 
-    @Operation(summary = "Get the Bank statement. Idempotent operation")
+    @Operation(summary = "Bank account statement.")
     @ApiResponses({ @ApiResponse(responseCode = "200", description = "The bank statement was found and returned.")})
-    @PutMapping("statement/{account_id}")
-    public ResponseEntity<BankStatementDto> statement(@PathVariable(value = "account_id") Integer id, @RequestBody PeriodDto periodDto) {
+    @PutMapping("statements/{id}")
+    public ResponseEntity<BankStatementDto> statement(@PathVariable(value = "id") Integer id, @RequestBody PeriodDto periodDto) {
 
         return accountService.statement(id, periodDto);
 

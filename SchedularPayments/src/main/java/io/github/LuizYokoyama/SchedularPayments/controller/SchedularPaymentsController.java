@@ -14,34 +14,35 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
+@RequestMapping("v1")
 public class SchedularPaymentsController {
 
     @Autowired
     SchedularService schedularService;
 
-    @Operation(summary = "Post order to CREATE a scheduled payment.")
-    @ApiResponses({ @ApiResponse(responseCode = "201", description = "The order has been posted and the scheduled payment created.")})
-    @PostMapping("create_scheduled_payment")
+    @Operation(summary = "CREATE a scheduled payment.")
+    @ApiResponses({ @ApiResponse(responseCode = "201", description = "The scheduled payment created.")})
+    @PostMapping("recurrences")
     public ResponseEntity<RecurrenceDto> createScheduledPayment(@RequestBody CreateRecurrenceDto createRecurrenceDto) {
 
         return schedularService.schedule(createRecurrenceDto);
 
     }
 
-    @Operation(summary = "Put order to EDIT the scheduled payment.")
+    @Operation(summary = "EDIT the scheduled payment.")
     @ApiResponses({ @ApiResponse(responseCode = "200", description = "The scheduled payment edited OK.")})
-    @PutMapping("edit_scheduled_payment/{recurrece_id}")
-    public ResponseEntity<RecurrenceDto> editScheduledPayment(@PathVariable(value = "recurrece_id") UUID uuid, @RequestBody EditRecurrenceDto editRecurrenceDto) {
+    @PatchMapping("recurrences/{id}")
+    public ResponseEntity<RecurrenceDto> editScheduledPayment(@PathVariable(value = "id") UUID uuid, @RequestBody EditRecurrenceDto editRecurrenceDto) {
 
         //return schedularService.editScheduled(uuid, editRecurrenceDto);
         //TODO
         return null;
     }
 
-    @Operation(summary = "Put order to CANCEL the scheduled payment.")
+    @Operation(summary = "CANCEL the scheduled payment.")
     @ApiResponses({ @ApiResponse(responseCode = "200", description = "The scheduled payment was canceled.")})
-    @PutMapping("cancel_scheduled_payment")
-    public String cancelScheduledPayments() {
+    @DeleteMapping("recurrences/{id}")
+    public String cancelScheduledPayments(@PathVariable(value = "id") UUID uuid) {
         //TODO
         return "Recurrence payment test CANCELED OK";
 

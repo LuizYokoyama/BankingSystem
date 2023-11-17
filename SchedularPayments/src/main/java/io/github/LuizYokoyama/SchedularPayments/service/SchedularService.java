@@ -192,4 +192,44 @@ public class SchedularService {
         return ResponseEntity.status(HttpStatus.OK).body(recurrenceDto);
 
     }
+
+    public ResponseEntity<RecurrenceDto> cancelScheduledPayment(UUID uuid) {
+
+        Optional<RecurrenceEntity> recurrenceEntityOptional = recurrenceRepository.findById(uuid);
+        if (!recurrenceEntityOptional.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        RecurrenceEntity recurrenceEntity = recurrenceEntityOptional.get();
+
+        if (!recurrenceEntity.getRecurrenceStatus().equals(RecurrenceStatus.PENDING)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
+        Set<EntryEntity> entryEntitySet = recurrenceEntity.getEntrySet();
+
+
+        for (EntryEntity entryEntity : entryEntitySet ){
+            if (entryEntity.getEntryStatus().equals(EntryStatus.DONE)){
+                recurrenceEntity.setRecurrenceStatus(RecurrenceStatus.PARTLY_CANCELED);
+            }
+            if (entryEntity.getEntryStatus().equals(EntryStatus.PENDING)){
+                entryEntity.setEntryStatus(EntryStatus.CANCELED);
+            }
+        }
+
+        if (!recurrenceEntity.getRecurrenceStatus().equals(RecurrenceStatus.PARTLY_CANCELED)){
+            recurrenceEntity.setRecurrenceStatus(RecurrenceStatus.CANCELED);
+        }
+
+        recurrenceEntity = recurrenceRepository.save(recurrenceEntity);
+
+        RecurrenceDto recurrenceDto = new RecurrenceDto();
+        BeanUtils.copyProperties(recurrenceEntity, recurrenceDto);
+        recurrenceDto.setAccountId(recurrenceEntity.getAccountEntity().getAccountId());
+        recurrenceDto.setAccountDestinationID(recurrenceEntity.getAccountDestination().getAccountId());
+
+        return ResponseEntity.status(HttpStatus.OK).body(recurrenceDto);
+
+    }
 }

@@ -41,9 +41,9 @@ public class SchedularPaymentsController {
     @Operation(summary = "CANCEL the scheduled payment.")
     @ApiResponses({ @ApiResponse(responseCode = "200", description = "The scheduled payment was canceled.")})
     @DeleteMapping("recurrences/{id}")
-    public String cancelScheduledPayments(@PathVariable(value = "id") UUID uuid) {
-        //TODO
-        return "Recurrence payment test CANCELED OK";
+    public ResponseEntity<RecurrenceDto> cancelScheduledPayments(@PathVariable(value = "id") UUID uuid) {
+
+        return schedularService.cancelScheduledPayment(uuid);
 
     }
 }

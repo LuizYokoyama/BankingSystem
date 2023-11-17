@@ -15,8 +15,9 @@ import java.util.UUID;
 @Repository("entryRepository")
 public interface EntryRepository extends JpaRepository<EntryEntity, UUID> {
 
-    @Query("SELECT new io.github.LuizYokoyama.BankAccount.dto.EntryDto(e.entryId, :id, e.operationType, e.value, e.entryDateTime, e.entryStatus)" +
-            "FROM EntryEntity e WHERE e.accountEntity.accountId = :id AND e.entryDateTime >= :initDate AND e.entryDateTime <= :endDate")
+    @Query("SELECT new io.github.LuizYokoyama.BankAccount.dto.EntryDto(e.entryId, :id, e.operationType, e.value, e.entryDateTime, e.entryStatus) " +
+            "FROM EntryEntity e WHERE e.accountEntity.accountId = :id AND e.entryDateTime >= :initDate AND e.entryDateTime <= :endDate " +
+            " ORDER BY e.entryDateTime")
     List<EntryDto> getStatement(@Param("id") Integer id, @Param("initDate") LocalDateTime initDate, @Param("endDate") LocalDateTime endDate);
 
 }

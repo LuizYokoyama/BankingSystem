@@ -111,6 +111,14 @@ public class SchedularService {
 
     public ResponseEntity<RecurrenceDto> editScheduled(UUID uuid, EditRecurrenceDto editRecurrenceDto) {
 
+        if (editRecurrenceDto.getValue() == 0){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
+        if (editRecurrenceDto.getOccurrenceDate().isBefore(LocalDate.now())){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
         Optional<RecurrenceEntity> recurrenceEntityOptional = recurrenceRepository.findById(uuid);
         if (!recurrenceEntityOptional.isPresent()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
@@ -125,36 +133,63 @@ public class SchedularService {
         }
 
         if (recurrenceEntity.getValue() == editRecurrenceDto.getValue() &&
-                recurrenceEntity.getDuration() == editRecurrenceDto.getDuration() &
-                recurrenceEntity.getOccurrenceDate() == editRecurrenceDto.getOccurrenceDate()){
+                recurrenceEntity.getDuration() == editRecurrenceDto.getDuration() &&
+                recurrenceEntity.getOccurrenceDate().isEqual(editRecurrenceDto.getOccurrenceDate())){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
 
-        if (editRecurrenceDto.getValue() == 0){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
+        Set<EntryEntity> entryEntitySet = recurrenceEntity.getEntrySet();
 
-        if (editRecurrenceDto.getOccurrenceDate().isBefore(LocalDate.now())){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        for (EntryEntity entryEntity : entryEntitySet ){
+            if (entryEntity.getEntryStatus().equals(EntryStatus.PENDING)){
+                entryEntity.setEntryStatus(EntryStatus.CANCELED);
+            }
         }
 
         AccountEntity accountEntity = recurrenceEntity.getAccountEntity();
-
         AccountEntity accountDestinationEntity = recurrenceEntity.getAccountDestination();
+        for (int i = 0; i < editRecurrenceDto.getDuration(); i++){
 
+            LocalDateTime entryDate = editRecurrenceDto.getOccurrenceDate().plusMonths(i).atTime(0, 0);
 
+            // CREDIT
+            EntryEntity entryEntityToCredit = new EntryEntity();
+            entryEntityToCredit.setRecurrenceEntity(recurrenceEntity);
+            entryEntityToCredit.setAccountEntity(accountDestinationEntity); //will receive the amount
+            entryEntityToCredit.setOriginEntity(accountEntity); //will send the amount
+            entryEntityToCredit.setEntryDateTime(entryDate);
+            entryEntityToCredit.setValue(editRecurrenceDto.getValue());
+            entryEntityToCredit.setOperationType(OperationType.CREDIT);
+            entryEntityToCredit.setEntryStatus(EntryStatus.PENDING);
+            entryEntityToCredit = entryRepository.save(entryEntityToCredit);
+            entryEntitySet.add(entryEntityToCredit);
 
+            // DEBIT
+            EntryEntity entryEntityToDebit = new EntryEntity();
+            entryEntityToDebit.setRecurrenceEntity(recurrenceEntity);
+            entryEntityToDebit.setAccountEntity(accountEntity); //will send the amount
+            entryEntityToDebit.setOriginEntity(accountDestinationEntity); //will receive the amount
+            entryEntityToDebit.setEntryDateTime(entryDate);
+            entryEntityToDebit.setValue(editRecurrenceDto.getValue());
+            entryEntityToDebit.setOperationType(OperationType.DEBIT);
+            entryEntityToDebit.setEntryStatus(EntryStatus.PENDING);
+            entryEntityToDebit = entryRepository.save(entryEntityToDebit);
+            entryEntitySet.add(entryEntityToDebit);
+
+        }
+
+        recurrenceEntity.setValue(editRecurrenceDto.getValue());
+        recurrenceEntity.setDuration(editRecurrenceDto.getDuration());
+        recurrenceEntity.setOccurrenceDate(editRecurrenceDto.getOccurrenceDate());
         recurrenceEntity.setRecurrenceStatus(RecurrenceStatus.PENDING);
-        recurrenceEntity = recurrenceRepository.save(recurrenceEntity);
-
-
         recurrenceEntity = recurrenceRepository.save(recurrenceEntity);
 
         RecurrenceDto recurrenceDto = new RecurrenceDto();
         BeanUtils.copyProperties(recurrenceEntity, recurrenceDto);
+        recurrenceDto.setAccountId(accountEntity.getAccountId());
+        recurrenceDto.setAccountDestinationID(accountDestinationEntity.getAccountId());
 
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(recurrenceDto);
+        return ResponseEntity.status(HttpStatus.OK).body(recurrenceDto);
 
     }
 }

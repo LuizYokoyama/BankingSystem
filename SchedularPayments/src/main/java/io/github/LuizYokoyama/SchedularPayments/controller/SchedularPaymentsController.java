@@ -34,9 +34,8 @@ public class SchedularPaymentsController {
     @PatchMapping("recurrences/{id}")
     public ResponseEntity<RecurrenceDto> editScheduledPayment(@PathVariable(value = "id") UUID uuid, @RequestBody EditRecurrenceDto editRecurrenceDto) {
 
-        //return schedularService.editScheduled(uuid, editRecurrenceDto);
-        //TODO
-        return null;
+        return schedularService.editScheduled(uuid, editRecurrenceDto);
+
     }
 
     @Operation(summary = "CANCEL the scheduled payment.")

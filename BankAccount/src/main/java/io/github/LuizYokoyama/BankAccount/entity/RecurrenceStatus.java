@@ -6,6 +6,6 @@ public enum RecurrenceStatus {
     PARTLY_DONE,
     PENDING,
     DONE,
-    PARTLY_CANCELED;
+    PARTLY_CANCELED;  //Some payments have already been done before cancellation
 
 }

@@ -125,8 +125,7 @@ public class SchedularService {
         RecurrenceEntity recurrenceEntity = recurrenceEntityOptional.get();
 
         if (recurrenceEntity.getRecurrenceStatus() == RecurrenceStatus.CANCELED ||
-                recurrenceEntity.getRecurrenceStatus() == RecurrenceStatus.DONE ||
-                recurrenceEntity.getRecurrenceStatus() == RecurrenceStatus.PARTLY_CANCELED){
+                recurrenceEntity.getRecurrenceStatus() == RecurrenceStatus.DONE ){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
 
@@ -141,6 +140,7 @@ public class SchedularService {
         for (EntryEntity entryEntity : entryEntitySet ){
             if (entryEntity.getEntryStatus().equals(EntryStatus.PENDING)){
                 entryEntity.setEntryStatus(EntryStatus.CANCELED);
+                entryEntity.setRecurrenceEntity(null);
             }
         }
 
@@ -209,17 +209,12 @@ public class SchedularService {
 
 
         for (EntryEntity entryEntity : entryEntitySet ){
-            if (entryEntity.getEntryStatus().equals(EntryStatus.DONE)){
-                recurrenceEntity.setRecurrenceStatus(RecurrenceStatus.PARTLY_CANCELED);
-            }
             if (entryEntity.getEntryStatus().equals(EntryStatus.PENDING)){
                 entryEntity.setEntryStatus(EntryStatus.CANCELED);
             }
         }
 
-        if (!recurrenceEntity.getRecurrenceStatus().equals(RecurrenceStatus.PARTLY_CANCELED)){
-            recurrenceEntity.setRecurrenceStatus(RecurrenceStatus.CANCELED);
-        }
+        recurrenceEntity.setRecurrenceStatus(RecurrenceStatus.CANCELED);
 
         recurrenceEntity = recurrenceRepository.save(recurrenceEntity);
 

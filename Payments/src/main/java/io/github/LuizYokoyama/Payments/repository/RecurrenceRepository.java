@@ -1,5 +1,6 @@
 package io.github.LuizYokoyama.Payments.repository;
 
+import io.github.LuizYokoyama.Payments.dto.RecurrenceDto;
 import io.github.LuizYokoyama.Payments.entity.RecurrenceEntity;
 import io.github.LuizYokoyama.Payments.entity.RecurrenceStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,8 +14,8 @@ import java.util.UUID;
 @Repository("recurrenceRepository")
 public interface RecurrenceRepository extends JpaRepository<RecurrenceEntity, UUID> {
 
-    @Query("SELECT RecurrenceEntity " +
-            "FROM RecurrenceEntity e WHERE e.recurrenceStatus = :pending")
-    Set<RecurrenceEntity> getPendingRecurrences( @Param("pendig") RecurrenceStatus pending);
+    @Query("SELECT e " +
+            "FROM RecurrenceEntity e WHERE e.recurrenceStatus = :pending" )
+    Set<RecurrenceEntity> getPendingRecurrences( @Param("pending") RecurrenceStatus pending);
 
 }

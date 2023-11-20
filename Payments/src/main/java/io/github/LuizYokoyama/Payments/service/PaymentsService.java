@@ -39,9 +39,6 @@ public class PaymentsService {
             if (recurrence.getRecurrenceStatus() == RecurrenceStatus.CANCELED){
                 continue;
             }
-            if (recurrence.getRecurrenceStatus() == RecurrenceStatus.PARTLY_CANCELED){
-                continue;
-            }
             if (recurrence.getRecurrenceStatus() == RecurrenceStatus.DONE){
                 continue;
             }
@@ -66,9 +63,7 @@ public class PaymentsService {
 
                     if (entryCredit != null && entryDebit != null){
 
-                        if (entryEntityIterator.hasNext()){
-                            recurrence.setRecurrenceStatus(RecurrenceStatus.PARTLY_DONE);
-                        } else{
+                        if ( !entryEntityIterator.hasNext() ){
                             recurrence.setRecurrenceStatus(RecurrenceStatus.DONE);
                         }
 

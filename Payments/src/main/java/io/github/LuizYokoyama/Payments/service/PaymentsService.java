@@ -93,7 +93,9 @@ public class PaymentsService {
         }
 
         entryDebit.setEntryStatus(EntryStatus.DONE);
+        entryDebit.setRecurrenceEntity(null);
         entryCredit.setEntryStatus(EntryStatus.DONE);
+        entryCredit.setRecurrenceEntity(null);
         accountDebit.setBalance(accountDebit.getBalance() - entryDebit.getValue());
         accountCredit.setBalance(accountCredit.getBalance() + entryDebit.getValue());
 

@@ -1,8 +1,6 @@
 package io.github.LuizYokoyama.Payments.service;
 
 import io.github.LuizYokoyama.Payments.entity.*;
-import io.github.LuizYokoyama.Payments.repository.AccountRepository;
-import io.github.LuizYokoyama.Payments.repository.EntryRepository;
 import io.github.LuizYokoyama.Payments.repository.RecurrenceRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,13 +18,6 @@ public class PaymentsService {
 
     @Autowired
     private RecurrenceRepository recurrenceRepository;
-
-    @Autowired
-    private AccountRepository accountRepository;
-
-    @Autowired
-    private EntryRepository entryRepository;
-
 
     public int executePays(){
         int operationsCount = 0;

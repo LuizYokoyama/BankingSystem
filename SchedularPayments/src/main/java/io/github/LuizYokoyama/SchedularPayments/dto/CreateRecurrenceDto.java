@@ -1,6 +1,7 @@
 package io.github.LuizYokoyama.SchedularPayments.dto;
 
 import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
@@ -25,6 +26,7 @@ public class CreateRecurrenceDto extends RecurrenceDto{
 
     @Positive
     @Max(12)
+    @Min(1)
     private int duration;
 
     @Positive

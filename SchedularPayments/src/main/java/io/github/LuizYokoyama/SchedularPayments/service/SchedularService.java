@@ -4,10 +4,7 @@ import io.github.LuizYokoyama.SchedularPayments.dto.CreateRecurrenceDto;
 import io.github.LuizYokoyama.SchedularPayments.dto.EditRecurrenceDto;
 import io.github.LuizYokoyama.SchedularPayments.dto.RecurrenceDto;
 import io.github.LuizYokoyama.SchedularPayments.entity.*;
-import io.github.LuizYokoyama.SchedularPayments.exceptions.BadRequestRuntimeException;
-import io.github.LuizYokoyama.SchedularPayments.exceptions.NotFoundRuntimeException;
-import io.github.LuizYokoyama.SchedularPayments.exceptions.PreviousDateRuntimeException;
-import io.github.LuizYokoyama.SchedularPayments.exceptions.ValueZeroRuntimeException;
+import io.github.LuizYokoyama.SchedularPayments.exceptions.*;
 import io.github.LuizYokoyama.SchedularPayments.repository.AccountRepository;
 import io.github.LuizYokoyama.SchedularPayments.repository.EntryRepository;
 import io.github.LuizYokoyama.SchedularPayments.repository.RecurrenceRepository;
@@ -41,7 +38,7 @@ public class SchedularService {
     @Transactional
     public RecurrenceDto schedule(CreateRecurrenceDto createRecurrenceDto) {
 
-        validateValueDate(createRecurrenceDto);
+        validateRecurrence(createRecurrenceDto);
 
         Optional<AccountEntity> accountEntityOptional = accountRepository.findById(createRecurrenceDto.getAccountId());
         if (accountEntityOptional.isEmpty()){
@@ -58,41 +55,21 @@ public class SchedularService {
         recurrenceEntity.setAccountEntity(accountEntityOptional.get());
         recurrenceEntity.setAccountDestination(accountDestinationEntityOptional.get());
         recurrenceEntity.setRecurrenceStatus(RecurrenceStatus.PENDING);
-        recurrenceEntity = recurrenceRepository.save(recurrenceEntity);
+        try {
+            recurrenceEntity = recurrenceRepository.save(recurrenceEntity);
+        }catch (Exception ex){
+            throw new DataBaseException("Falha ao salvar a recorrência!", ex.getCause());
+        }
 
         Set<EntryEntity> entrySet = new HashSet<>();
+        generateNewEntries(entrySet, createRecurrenceDto, recurrenceEntity);
 
-        for (int i = 0; i < createRecurrenceDto.getDuration(); i++){
-
-            LocalDateTime entryDate = createRecurrenceDto.getOccurrenceDate().plusMonths(i).atTime(0, 0);
-
-            // CREDIT
-            EntryEntity entryEntityToCredit = new EntryEntity();
-            entryEntityToCredit.setRecurrenceEntity(recurrenceEntity);
-            entryEntityToCredit.setAccountEntity(accountDestinationEntityOptional.get()); //will receive the amount
-            entryEntityToCredit.setOriginEntity(accountEntityOptional.get()); //will send the amount
-            entryEntityToCredit.setEntryDateTime(entryDate);
-            entryEntityToCredit.setValue(createRecurrenceDto.getValue());
-            entryEntityToCredit.setOperationType(OperationType.CREDIT);
-            entryEntityToCredit.setEntryStatus(EntryStatus.PENDING);
-            entryEntityToCredit = entryRepository.save(entryEntityToCredit);
-            entrySet.add(entryEntityToCredit);
-
-            // DEBIT
-            EntryEntity entryEntityToDebit = new EntryEntity();
-            entryEntityToDebit.setRecurrenceEntity(recurrenceEntity);
-            entryEntityToDebit.setAccountEntity(accountEntityOptional.get()); //will send the amount
-            entryEntityToDebit.setOriginEntity(accountDestinationEntityOptional.get()); //will receive the amount
-            entryEntityToDebit.setEntryDateTime(entryDate);
-            entryEntityToDebit.setValue(createRecurrenceDto.getValue());
-            entryEntityToDebit.setOperationType(OperationType.DEBIT);
-            entryEntityToDebit.setEntryStatus(EntryStatus.PENDING);
-            entryEntityToDebit = entryRepository.save(entryEntityToDebit);
-            entrySet.add(entryEntityToDebit);
-
-        }
         recurrenceEntity.setEntrySet(entrySet);
-        recurrenceEntity = recurrenceRepository.save(recurrenceEntity);
+        try {
+            recurrenceEntity = recurrenceRepository.save(recurrenceEntity);
+        }catch (Exception ex){
+            throw new DataBaseException("Falha ao salvar a recorrência!", ex.getCause());
+        }
 
         RecurrenceDto recurrenceDto = new RecurrenceDto();
         BeanUtils.copyProperties(recurrenceEntity, recurrenceDto);
@@ -105,9 +82,9 @@ public class SchedularService {
     @Transactional
     public RecurrenceDto editScheduled(UUID uuid, EditRecurrenceDto editRecurrenceDto) {
 
-        validateValueDate(editRecurrenceDto);
+        validateRecurrence(editRecurrenceDto);
 
-        RecurrenceEntity recurrenceEntity = validateRecurrence(uuid);
+        RecurrenceEntity recurrenceEntity = GetValidRecurrence(uuid);
 
         if (recurrenceEntity.getValue() == editRecurrenceDto.getValue() &&
                 recurrenceEntity.getDuration() == editRecurrenceDto.getDuration() &&
@@ -124,70 +101,17 @@ public class SchedularService {
             }
         }
 
-        AccountEntity accountEntity = recurrenceEntity.getAccountEntity();
-        AccountEntity accountDestinationEntity = recurrenceEntity.getAccountDestination();
-        for (int i = 0; i < editRecurrenceDto.getDuration(); i++){
-
-            LocalDateTime entryDate = editRecurrenceDto.getOccurrenceDate().plusMonths(i).atTime(0, 0);
-
-            // CREDIT
-            EntryEntity entryEntityToCredit = new EntryEntity();
-            entryEntityToCredit.setRecurrenceEntity(recurrenceEntity);
-            entryEntityToCredit.setAccountEntity(accountDestinationEntity); //will receive the amount
-            entryEntityToCredit.setOriginEntity(accountEntity); //will send the amount
-            entryEntityToCredit.setEntryDateTime(entryDate);
-            entryEntityToCredit.setValue(editRecurrenceDto.getValue());
-            entryEntityToCredit.setOperationType(OperationType.CREDIT);
-            entryEntityToCredit.setEntryStatus(EntryStatus.PENDING);
-            entryEntityToCredit = entryRepository.save(entryEntityToCredit);
-            entryEntitySet.add(entryEntityToCredit);
-
-            // DEBIT
-            EntryEntity entryEntityToDebit = new EntryEntity();
-            entryEntityToDebit.setRecurrenceEntity(recurrenceEntity);
-            entryEntityToDebit.setAccountEntity(accountEntity); //will send the amount
-            entryEntityToDebit.setOriginEntity(accountDestinationEntity); //will receive the amount
-            entryEntityToDebit.setEntryDateTime(entryDate);
-            entryEntityToDebit.setValue(editRecurrenceDto.getValue());
-            entryEntityToDebit.setOperationType(OperationType.DEBIT);
-            entryEntityToDebit.setEntryStatus(EntryStatus.PENDING);
-            entryEntityToDebit = entryRepository.save(entryEntityToDebit);
-            entryEntitySet.add(entryEntityToDebit);
-
-        }
+        generateNewEntries(entryEntitySet, editRecurrenceDto, recurrenceEntity);
 
         recurrenceEntity.setValue(editRecurrenceDto.getValue());
         recurrenceEntity.setDuration(editRecurrenceDto.getDuration());
         recurrenceEntity.setOccurrenceDate(editRecurrenceDto.getOccurrenceDate());
         recurrenceEntity.setRecurrenceStatus(RecurrenceStatus.PENDING);
-        recurrenceEntity = recurrenceRepository.save(recurrenceEntity);
-
-        RecurrenceDto recurrenceDto = new RecurrenceDto();
-        BeanUtils.copyProperties(recurrenceEntity, recurrenceDto);
-        recurrenceDto.setAccountId(accountEntity.getAccountId());
-        recurrenceDto.setAccountDestinationID(accountDestinationEntity.getAccountId());
-
-        return recurrenceDto;
-
-    }
-
-
-
-    @Transactional
-    public RecurrenceDto cancelScheduledPayment(UUID uuid) {
-
-        RecurrenceEntity recurrenceEntity = validateRecurrence(uuid);
-
-        Set<EntryEntity> entryEntitySet = recurrenceEntity.getEntrySet();
-
-        for (EntryEntity entryEntity : entryEntitySet ){
-            if (entryEntity.getEntryStatus().equals(EntryStatus.PENDING)){
-                entryEntity.setEntryStatus(EntryStatus.CANCELED);
-            }
+        try {
+            recurrenceEntity = recurrenceRepository.save(recurrenceEntity);
+        }catch (Exception ex){
+            throw new DataBaseException("Falha ao salvar a recorrência!", ex.getCause());
         }
-
-        recurrenceEntity.setRecurrenceStatus(RecurrenceStatus.CANCELED);
-        recurrenceEntity = recurrenceRepository.save(recurrenceEntity);
 
         RecurrenceDto recurrenceDto = new RecurrenceDto();
         BeanUtils.copyProperties(recurrenceEntity, recurrenceDto);
@@ -198,7 +122,81 @@ public class SchedularService {
 
     }
 
-    private RecurrenceEntity validateRecurrence(UUID uuid) {
+
+    @Transactional
+    public RecurrenceDto cancelScheduledPayment(UUID uuid) {
+
+        RecurrenceEntity recurrenceEntity = GetValidRecurrence(uuid);
+
+        Set<EntryEntity> entryEntitySet = recurrenceEntity.getEntrySet();
+
+        for (EntryEntity entryEntity : entryEntitySet ){
+            if (entryEntity.getEntryStatus().equals(EntryStatus.PENDING)){
+                entryEntity.setEntryStatus(EntryStatus.CANCELED);
+            }
+        }
+
+        recurrenceEntity.setRecurrenceStatus(RecurrenceStatus.CANCELED);
+        try {
+            recurrenceEntity = recurrenceRepository.save(recurrenceEntity);
+        }catch (Exception ex){
+            throw new DataBaseException("Falha ao salvar a recorrência!", ex.getCause());
+        }
+
+        RecurrenceDto recurrenceDto = new RecurrenceDto();
+        BeanUtils.copyProperties(recurrenceEntity, recurrenceDto);
+        recurrenceDto.setAccountId(recurrenceEntity.getAccountEntity().getAccountId());
+        recurrenceDto.setAccountDestinationID(recurrenceEntity.getAccountDestination().getAccountId());
+
+        return recurrenceDto;
+
+    }
+
+    private void generateNewEntries(Set<EntryEntity> entrySet, RecurrenceDto recurrenceDto, RecurrenceEntity recurrenceEntity){
+
+        AccountEntity accountEntity = recurrenceEntity.getAccountEntity();
+        AccountEntity accountDestinationEntity = recurrenceEntity.getAccountDestination();
+
+        for (int i = 0; i < recurrenceDto.getDuration(); i++){
+
+            LocalDateTime entryDate = recurrenceDto.getOccurrenceDate().plusMonths(i).atTime(0, 0);
+
+            // CREDIT
+            EntryEntity entryEntityToCredit = new EntryEntity();
+            entryEntityToCredit.setRecurrenceEntity(recurrenceEntity);
+            entryEntityToCredit.setAccountEntity(accountDestinationEntity); //will receive the amount
+            entryEntityToCredit.setOriginEntity(accountEntity); //will send the amount
+            entryEntityToCredit.setEntryDateTime(entryDate);
+            entryEntityToCredit.setValue(recurrenceDto.getValue());
+            entryEntityToCredit.setOperationType(OperationType.CREDIT);
+            entryEntityToCredit.setEntryStatus(EntryStatus.PENDING);
+            try {
+                entryEntityToCredit = entryRepository.save(entryEntityToCredit);
+            }catch (Exception ex){
+                throw new DataBaseException("Falha ao salvar entrada de crédito!", ex.getCause());
+            }
+            entrySet.add(entryEntityToCredit);
+
+            // DEBIT
+            EntryEntity entryEntityToDebit = new EntryEntity();
+            entryEntityToDebit.setRecurrenceEntity(recurrenceEntity);
+            entryEntityToDebit.setAccountEntity(accountEntity); //will send the amount
+            entryEntityToDebit.setOriginEntity(accountDestinationEntity); //will receive the amount
+            entryEntityToDebit.setEntryDateTime(entryDate);
+            entryEntityToDebit.setValue(recurrenceDto.getValue());
+            entryEntityToDebit.setOperationType(OperationType.DEBIT);
+            entryEntityToDebit.setEntryStatus(EntryStatus.PENDING);
+            try {
+                entryEntityToDebit = entryRepository.save(entryEntityToDebit);
+            }catch (Exception ex){
+                throw new DataBaseException("Falha ao salvar entrada de débito!", ex.getCause());
+            }
+            entrySet.add(entryEntityToDebit);
+        }
+
+    }
+
+    private RecurrenceEntity GetValidRecurrence(UUID uuid) {
 
         Optional<RecurrenceEntity> recurrenceEntityOptional = recurrenceRepository.findById(uuid);
 
@@ -219,8 +217,7 @@ public class SchedularService {
         return recurrenceEntity;
     }
 
-    private void validateValueDate(RecurrenceDto recurrenceDto){
-
+    private void validateRecurrence(RecurrenceDto recurrenceDto){
 
         if (recurrenceDto.getValue() == 0){
             throw new ValueZeroRuntimeException("Forneça um valor maior que zero!");
@@ -229,7 +226,6 @@ public class SchedularService {
         if (recurrenceDto.getOccurrenceDate().isBefore(LocalDate.now())){
             throw new PreviousDateRuntimeException("Forneça uma data presente ou futura!");
         }
-
 
     }
 }

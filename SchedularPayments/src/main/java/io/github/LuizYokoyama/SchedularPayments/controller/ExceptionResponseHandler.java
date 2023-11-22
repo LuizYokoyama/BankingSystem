@@ -1,9 +1,6 @@
 package io.github.LuizYokoyama.SchedularPayments.controller;
 
-import io.github.LuizYokoyama.SchedularPayments.exceptions.BadRequestRuntimeException;
-import io.github.LuizYokoyama.SchedularPayments.exceptions.NotFoundRuntimeException;
-import io.github.LuizYokoyama.SchedularPayments.exceptions.PreviousDateRuntimeException;
-import io.github.LuizYokoyama.SchedularPayments.exceptions.ValueZeroRuntimeException;
+import io.github.LuizYokoyama.SchedularPayments.exceptions.*;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,6 +48,12 @@ public class ExceptionResponseHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleBadRequestException(
             BadRequestRuntimeException ex ) {
         return ResponseEntity.badRequest().body(ex.getMessage());
+    }
+
+    @ExceptionHandler(value = {DataBaseException.class})
+    protected ResponseEntity<Object> handleDataBaseException(
+            DataBaseException ex ) {
+        return ResponseEntity.internalServerError().body(ex.toString());
     }
 
 }

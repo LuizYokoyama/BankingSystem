@@ -4,6 +4,10 @@ import io.github.LuizYokoyama.SchedularPayments.dto.CreateRecurrenceDto;
 import io.github.LuizYokoyama.SchedularPayments.dto.EditRecurrenceDto;
 import io.github.LuizYokoyama.SchedularPayments.dto.RecurrenceDto;
 import io.github.LuizYokoyama.SchedularPayments.entity.*;
+import io.github.LuizYokoyama.SchedularPayments.exceptions.BadRequestRuntimeException;
+import io.github.LuizYokoyama.SchedularPayments.exceptions.NotFoundRuntimeException;
+import io.github.LuizYokoyama.SchedularPayments.exceptions.PreviousDateRuntimeException;
+import io.github.LuizYokoyama.SchedularPayments.exceptions.ValueZeroRuntimeException;
 import io.github.LuizYokoyama.SchedularPayments.repository.AccountRepository;
 import io.github.LuizYokoyama.SchedularPayments.repository.EntryRepository;
 import io.github.LuizYokoyama.SchedularPayments.repository.RecurrenceRepository;
@@ -37,24 +41,24 @@ public class SchedularService {
     private EntryRepository entryRepository;
 
     @Transactional
-    public ResponseEntity<RecurrenceDto> schedule(CreateRecurrenceDto createRecurrenceDto) {
+    public RecurrenceDto schedule(CreateRecurrenceDto createRecurrenceDto) {
 
         if (createRecurrenceDto.getValue() == 0){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            throw new ValueZeroRuntimeException("Forneça um valor maior que zero!");
         }
 
         if (createRecurrenceDto.getOccurrenceDate().isBefore(LocalDate.now())){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            throw new PreviousDateRuntimeException("Forneça uma data presente ou futura!");
         }
 
         Optional<AccountEntity> accountEntityOptional = accountRepository.findById(createRecurrenceDto.getAccountId());
-        if (!accountEntityOptional.isPresent()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        if (accountEntityOptional.isEmpty()){
+            throw new NotFoundRuntimeException("Conta não encontrada. Forneça uma conta válida.");
         }
 
         Optional<AccountEntity> accountDestinationEntityOptional = accountRepository.findById(createRecurrenceDto.getAccountDestinationID());
-        if (!accountDestinationEntityOptional.isPresent()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        if (accountDestinationEntityOptional.isEmpty()){
+            throw new NotFoundRuntimeException("Conta de destino não encontrada. Forneça uma conta de destino válida.");
         }
 
         RecurrenceEntity recurrenceEntity = new RecurrenceEntity();
@@ -103,36 +107,39 @@ public class SchedularService {
         recurrenceDto.setAccountId(createRecurrenceDto.getAccountId());
         recurrenceDto.setAccountDestinationID(createRecurrenceDto.getAccountDestinationID());
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(recurrenceDto);
+        return recurrenceDto;
     }
 
     @Transactional
-    public ResponseEntity<RecurrenceDto> editScheduled(UUID uuid, EditRecurrenceDto editRecurrenceDto) {
+    public RecurrenceDto editScheduled(UUID uuid, EditRecurrenceDto editRecurrenceDto) {
 
         if (editRecurrenceDto.getValue() == 0){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            throw new ValueZeroRuntimeException("Forneça um valor maior que zero!");
         }
 
         if (editRecurrenceDto.getOccurrenceDate().isBefore(LocalDate.now())){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            throw new PreviousDateRuntimeException("Forneça uma data presente ou futura!");
         }
 
         Optional<RecurrenceEntity> recurrenceEntityOptional = recurrenceRepository.findById(uuid);
         if (!recurrenceEntityOptional.isPresent()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            throw new NotFoundRuntimeException("Recorrência não encontrada. Forneça uma recorrência válida.");
         }
 
         RecurrenceEntity recurrenceEntity = recurrenceEntityOptional.get();
 
-        if (recurrenceEntity.getRecurrenceStatus() == RecurrenceStatus.CANCELED ||
-                recurrenceEntity.getRecurrenceStatus() == RecurrenceStatus.DONE ){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        if (recurrenceEntity.getRecurrenceStatus() == RecurrenceStatus.CANCELED ){
+            throw new BadRequestRuntimeException("Recorrência já cancelada e não pode ser editada. Verifique se esta recorrência está correta.");
+        }
+
+        if ( recurrenceEntity.getRecurrenceStatus() == RecurrenceStatus.DONE ){
+            throw new BadRequestRuntimeException("Recorrência já concluída e não pode ser editada. Verifique se esta recorrência está correta.");
         }
 
         if (recurrenceEntity.getValue() == editRecurrenceDto.getValue() &&
                 recurrenceEntity.getDuration() == editRecurrenceDto.getDuration() &&
                 recurrenceEntity.getOccurrenceDate().isEqual(editRecurrenceDto.getOccurrenceDate())){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            throw new BadRequestRuntimeException("Não há alteração nos dados desta recorrênca. Verifique se os dados estão corretos.");
         }
 
         Set<EntryEntity> entryEntitySet = recurrenceEntity.getEntrySet();
@@ -187,22 +194,27 @@ public class SchedularService {
         recurrenceDto.setAccountId(accountEntity.getAccountId());
         recurrenceDto.setAccountDestinationID(accountDestinationEntity.getAccountId());
 
-        return ResponseEntity.status(HttpStatus.OK).body(recurrenceDto);
+        return recurrenceDto;
 
     }
 
     @Transactional
-    public ResponseEntity<RecurrenceDto> cancelScheduledPayment(UUID uuid) {
+    public RecurrenceDto cancelScheduledPayment(UUID uuid) {
 
         Optional<RecurrenceEntity> recurrenceEntityOptional = recurrenceRepository.findById(uuid);
-        if (!recurrenceEntityOptional.isPresent()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+
+        if (recurrenceEntityOptional.isEmpty()){
+            throw new NotFoundRuntimeException("Recorrência não encontrada. Forneça uma recorrência válida.");
         }
 
         RecurrenceEntity recurrenceEntity = recurrenceEntityOptional.get();
 
-        if (!recurrenceEntity.getRecurrenceStatus().equals(RecurrenceStatus.PENDING)){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        if (recurrenceEntity.getRecurrenceStatus() == RecurrenceStatus.CANCELED ){
+            throw new BadRequestRuntimeException("Recorrência já cancelada e não pode ser editada. Verifique se esta recorrência está correta.");
+        }
+
+        if ( recurrenceEntity.getRecurrenceStatus() == RecurrenceStatus.DONE ){
+            throw new BadRequestRuntimeException("Recorrência já concluída e não pode ser editada. Verifique se esta recorrência está correta.");
         }
 
         Set<EntryEntity> entryEntitySet = recurrenceEntity.getEntrySet();
@@ -223,7 +235,7 @@ public class SchedularService {
         recurrenceDto.setAccountId(recurrenceEntity.getAccountEntity().getAccountId());
         recurrenceDto.setAccountDestinationID(recurrenceEntity.getAccountDestination().getAccountId());
 
-        return ResponseEntity.status(HttpStatus.OK).body(recurrenceDto);
+        return recurrenceDto;
 
     }
 }

@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,8 +26,12 @@ public class SchedularPaymentsController {
     @PostMapping("recurrences")
     public ResponseEntity<RecurrenceDto> createScheduledPayment(@RequestBody CreateRecurrenceDto createRecurrenceDto) {
 
-        return schedularService.schedule(createRecurrenceDto);
+        RecurrenceDto recurrenceDto = schedularService.schedule(createRecurrenceDto);
+        if (recurrenceDto == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
 
+        return ResponseEntity.status(HttpStatus.CREATED).body(recurrenceDto);
     }
 
     @Operation(summary = "EDIT the scheduled payment.")
@@ -34,8 +39,12 @@ public class SchedularPaymentsController {
     @PatchMapping("recurrences/{id}")
     public ResponseEntity<RecurrenceDto> editScheduledPayment(@PathVariable(value = "id") UUID uuid, @RequestBody EditRecurrenceDto editRecurrenceDto) {
 
-        return schedularService.editScheduled(uuid, editRecurrenceDto);
+        RecurrenceDto recurrenceDto = schedularService.editScheduled(uuid, editRecurrenceDto);
+        if (recurrenceDto == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
 
+        return ResponseEntity.status(HttpStatus.CREATED).body(recurrenceDto);
     }
 
     @Operation(summary = "CANCEL the scheduled payment.")
@@ -43,7 +52,12 @@ public class SchedularPaymentsController {
     @DeleteMapping("recurrences/{id}")
     public ResponseEntity<RecurrenceDto> cancelScheduledPayments(@PathVariable(value = "id") UUID uuid) {
 
-        return schedularService.cancelScheduledPayment(uuid);
+        RecurrenceDto recurrenceDto = schedularService.cancelScheduledPayment(uuid);
+        if (recurrenceDto == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(recurrenceDto);
 
     }
 }

@@ -22,7 +22,7 @@ public class SchedularPaymentsController {
     SchedularService schedularService;
 
     @Operation(summary = "CREATE a scheduled payment.")
-    @ApiResponses({ @ApiResponse(responseCode = "201", description = "The scheduled payment created.")})
+    @ApiResponses({ @ApiResponse(responseCode = "201", description = "The scheduled payment was created.")})
     @PostMapping("recurrences")
     public ResponseEntity<RecurrenceDto> createScheduledPayment(@RequestBody CreateRecurrenceDto createRecurrenceDto) {
 
@@ -44,7 +44,7 @@ public class SchedularPaymentsController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(recurrenceDto);
+        return ResponseEntity.status(HttpStatus.OK).body(recurrenceDto);
     }
 
     @Operation(summary = "CANCEL the scheduled payment.")
@@ -57,7 +57,7 @@ public class SchedularPaymentsController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(recurrenceDto);
+        return ResponseEntity.status(HttpStatus.OK).body(recurrenceDto);
 
     }
 }

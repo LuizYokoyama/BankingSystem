@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Getter
 @Setter
-public class EditRecurrenceDto {
+public class EditRecurrenceDto extends RecurrenceDto{
 
     @NotNull
     private LocalDate occurrenceDate;

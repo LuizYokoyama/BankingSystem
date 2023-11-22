@@ -41,7 +41,7 @@ public class SchedularService {
     @Transactional
     public RecurrenceDto schedule(CreateRecurrenceDto createRecurrenceDto) {
 
-        validateValueDate(createRecurrenceDto.getValue(), createRecurrenceDto.getOccurrenceDate());
+        validateValueDate(createRecurrenceDto);
 
         Optional<AccountEntity> accountEntityOptional = accountRepository.findById(createRecurrenceDto.getAccountId());
         if (accountEntityOptional.isEmpty()){
@@ -105,7 +105,7 @@ public class SchedularService {
     @Transactional
     public RecurrenceDto editScheduled(UUID uuid, EditRecurrenceDto editRecurrenceDto) {
 
-        validateValueDate(editRecurrenceDto.getValue(), editRecurrenceDto.getOccurrenceDate());
+        validateValueDate(editRecurrenceDto);
 
         RecurrenceEntity recurrenceEntity = validateRecurrence(uuid);
 
@@ -219,13 +219,14 @@ public class SchedularService {
         return recurrenceEntity;
     }
 
-    private void validateValueDate(float value, LocalDate date){
+    private void validateValueDate(RecurrenceDto recurrenceDto){
 
-        if (value == 0){
+
+        if (recurrenceDto.getValue() == 0){
             throw new ValueZeroRuntimeException("Forneça um valor maior que zero!");
         }
 
-        if (date.isBefore(LocalDate.now())){
+        if (recurrenceDto.getOccurrenceDate().isBefore(LocalDate.now())){
             throw new PreviousDateRuntimeException("Forneça uma data presente ou futura!");
         }
 

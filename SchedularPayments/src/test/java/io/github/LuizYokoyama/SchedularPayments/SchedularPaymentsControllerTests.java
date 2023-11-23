@@ -1,10 +1,13 @@
 package io.github.LuizYokoyama.SchedularPayments;
 
 import io.github.LuizYokoyama.SchedularPayments.controller.SchedularPaymentsController;
+import io.github.LuizYokoyama.SchedularPayments.dto.CreateRecurrenceDto;
+import io.github.LuizYokoyama.SchedularPayments.dto.RecurrenceDto;
 import io.github.LuizYokoyama.SchedularPayments.repository.RecurrenceRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.*;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -45,4 +48,11 @@ public class SchedularPaymentsControllerTests {
         Assertions.assertNotNull(schedularPaymentsController);
     }
 
+    @Test
+    void testCreateRecurrence()  {
+
+        ResponseEntity<RecurrenceDto> recurrenceDtoResponseEntity = schedularPaymentsController.createScheduledPayment(new CreateRecurrenceDto());
+
+        Assertions.assertEquals(recurrenceDtoResponseEntity, null);
+    }
 }

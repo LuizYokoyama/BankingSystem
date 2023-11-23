@@ -152,7 +152,7 @@ public class SchedularService {
 
     }
 
-    private void generateNewEntries(Set<EntryEntity> entrySet, RecurrenceDto recurrenceDto, RecurrenceEntity recurrenceEntity){
+    private void generateNewEntries(Set<EntryEntity> entrySet, EditRecurrenceDto recurrenceDto, RecurrenceEntity recurrenceEntity){
 
         AccountEntity accountEntity = recurrenceEntity.getAccountEntity();
         AccountEntity accountDestinationEntity = recurrenceEntity.getAccountDestination();
@@ -217,13 +217,13 @@ public class SchedularService {
         return recurrenceEntity;
     }
 
-    private void validateRecurrence(RecurrenceDto recurrenceDto){
+    private void validateRecurrence(EditRecurrenceDto recurrence){
 
-        if (recurrenceDto.getValue() == 0){
+        if (recurrence.getValue() == 0){
             throw new ValueZeroRuntimeException("Forneça um valor maior que zero!");
         }
 
-        if (recurrenceDto.getOccurrenceDate().isBefore(LocalDate.now())){
+        if (recurrence.getOccurrenceDate().isBefore(LocalDate.now())){
             throw new PreviousDateRuntimeException("Forneça uma data presente ou futura!");
         }
 

@@ -14,7 +14,9 @@ import java.util.UUID;
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class RecurrenceDto {
+public class RecurrenceDto extends EditRecurrenceDto{
+
+
 
     @EqualsAndHashCode.Include
     private UUID id;
@@ -26,7 +28,7 @@ public class RecurrenceDto {
 
     private LocalDate occurrenceDate;
 
-    @Min(1)
+    @Min(MIN_DURATION)
     private int duration;
 
     private float value;

@@ -15,14 +15,17 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Getter
 @Setter
-public class EditRecurrenceDto extends RecurrenceDto{
+public class EditRecurrenceDto{
+
+    public static final int MIN_DURATION = 1;
+    public static final int MAX_DURATION = 12;
 
     @NotNull
     private LocalDate occurrenceDate;
 
     @Positive
-    @Max(12)
-    @Min(1)
+    @Max(value = MAX_DURATION, message = "Forneça no máximo a duração de " + MAX_DURATION + " recorrências!")
+    @Min(value = MIN_DURATION, message = "Forneça no mínimo a duração de " + MIN_DURATION + " recorrência!")
     private int duration;
 
     @Positive

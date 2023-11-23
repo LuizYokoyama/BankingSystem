@@ -13,7 +13,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Setter
-public class CreateRecurrenceDto extends RecurrenceDto{
+public class CreateRecurrenceDto extends EditRecurrenceDto{
 
     @Positive
     private int accountId;
@@ -25,8 +25,8 @@ public class CreateRecurrenceDto extends RecurrenceDto{
     private LocalDate occurrenceDate;
 
     @Positive
-    @Max(12)
-    @Min(1)
+    @Max(value = MAX_DURATION, message = "Forneça no máximo a duração de " + MAX_DURATION + " recorrências!")
+    @Min(value = MIN_DURATION, message = "Forneça no mínimo a duração de " + MIN_DURATION + " recorrência!")
     private int duration;
 
     @Positive

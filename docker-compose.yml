@@ -8,6 +8,7 @@ services:
 
     volumes:
       - ./data/db:/postgresql
+      - ./sql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
 
     environment:
       POSTGRES_USER: admin
@@ -28,6 +29,7 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: root@root.com
       PGADMIN_DEFAULT_PASSWORD: root
+
     ports:
       - "5050:80"
     networks:

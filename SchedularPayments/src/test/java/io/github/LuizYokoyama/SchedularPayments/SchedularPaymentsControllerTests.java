@@ -39,13 +39,15 @@ public class SchedularPaymentsControllerTests {
     @Autowired
     RecurrenceRepository recurrenceRepository;
 
+    private final static CreateRecurrenceDto createRecurrenceDtoWithAccountNotExist;
     private final static CreateRecurrenceDto createRecurrenceDto;
-    private final static String json;
+    private final static String jsonCcreateRecurrenceDto;
+    private final static String jsonCcreateRecurrenceDtoWithAccountNotExist;
 
     @Container
     private static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:14.5")
             .withDatabaseName("test_bk").withUsername("admin").withPassword("admin")
-            .withInitScript("create_tables.sql");
+            .withInitScript("db_init.sql");
 
     static {
         postgreSQLContainer.start();
@@ -54,12 +56,14 @@ public class SchedularPaymentsControllerTests {
     static {
         createRecurrenceDto = new CreateRecurrenceDto(1, "Test", LocalDate.now(),
                                                         2, 5.1f, 1);
-
+        createRecurrenceDtoWithAccountNotExist = new CreateRecurrenceDto(5, "Test", LocalDate.now(),
+                2, 5.1f, 1);
 
 
         ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
         try {
-            json = mapper.writeValueAsString(createRecurrenceDto);
+            jsonCcreateRecurrenceDto = mapper.writeValueAsString(createRecurrenceDto);
+            jsonCcreateRecurrenceDtoWithAccountNotExist = mapper.writeValueAsString(createRecurrenceDtoWithAccountNotExist);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -99,8 +103,9 @@ public class SchedularPaymentsControllerTests {
     @Order(value = 4)
     void testPostRecurrenceWithAccountNotFound() throws Exception {
 
+
         mockMvc.perform(MockMvcRequestBuilders.post("/v1/recurrences")
-                .contentType(MediaType.APPLICATION_JSON).content(json)).andExpect(status().isNotFound());
+                .contentType(MediaType.APPLICATION_JSON).content(jsonCcreateRecurrenceDtoWithAccountNotExist)).andExpect(status().isNotFound());
 
 
 

@@ -228,5 +228,11 @@ public class SchedularService {
             throw new PreviousDateRuntimeException("Forneça uma data presente ou futura!");
         }
 
+        if (recurrence.getClass().equals(CreateRecurrenceDto.class)){
+            if (((CreateRecurrenceDto) recurrence).getAccountDestinationID() == ((CreateRecurrenceDto) recurrence).getAccountId()){
+                throw new BadRequestRuntimeException("Forneça uma conta de destino diferente desta conta");
+            }
+        }
+
     }
 }

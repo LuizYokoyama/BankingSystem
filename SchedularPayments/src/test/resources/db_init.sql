@@ -56,3 +56,5 @@ CREATE TABLE IF NOT EXISTS public.tb_entry
     CONSTRAINT tb_entry_operation_type_check CHECK (operation_type >= 0 AND operation_type <= 1),
     CONSTRAINT tb_entry_status_check CHECK (status >= 0 AND status <= 2)
 );
+
+INSERT INTO tb_account VALUES ( 1, 10, 'TEST NAME' )

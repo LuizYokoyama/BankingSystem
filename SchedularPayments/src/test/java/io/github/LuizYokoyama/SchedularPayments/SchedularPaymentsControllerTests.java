@@ -5,16 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.github.LuizYokoyama.SchedularPayments.controller.SchedularPaymentsController;
 import io.github.LuizYokoyama.SchedularPayments.dto.CreateRecurrenceDto;
-import io.github.LuizYokoyama.SchedularPayments.dto.EditRecurrenceDto;
-import io.github.LuizYokoyama.SchedularPayments.dto.IRecurrenceDto;
-import io.github.LuizYokoyama.SchedularPayments.dto.RecurrenceDto;
 import io.github.LuizYokoyama.SchedularPayments.repository.RecurrenceRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.*;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -24,7 +20,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -102,11 +97,10 @@ public class SchedularPaymentsControllerTests {
 
     @Test
     @Order(value = 4)
-    void testPostRecurrenceOk() throws Exception {
-        System.out.println("******* json: " + json.toString());
+    void testPostRecurrenceWithAccountNotFound() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/v1/recurrences")
-                .contentType(MediaType.APPLICATION_JSON).content(json)).andExpect(status().isBadRequest());
+                .contentType(MediaType.APPLICATION_JSON).content(json)).andExpect(status().isNotFound());
 
 
 

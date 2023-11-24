@@ -14,7 +14,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class RecurrenceDto extends EditRecurrenceDto{
+public class RecurrenceDto implements IRecurrenceDto{
 
 
 

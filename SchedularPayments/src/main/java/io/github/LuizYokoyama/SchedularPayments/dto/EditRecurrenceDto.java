@@ -15,10 +15,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Getter
 @Setter
-public class EditRecurrenceDto{
-
-    public static final int MIN_DURATION = 1;
-    public static final int MAX_DURATION = 12;
+public class EditRecurrenceDto implements IRecurrenceDto{
 
     @NotNull
     private LocalDate occurrenceDate;

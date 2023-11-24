@@ -13,7 +13,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Setter
-public class CreateRecurrenceDto extends EditRecurrenceDto{
+public class CreateRecurrenceDto implements IRecurrenceDto{
 
     @Positive
     private int accountId;

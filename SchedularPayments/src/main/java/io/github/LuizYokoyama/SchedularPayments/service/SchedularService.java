@@ -2,6 +2,7 @@ package io.github.LuizYokoyama.SchedularPayments.service;
 
 import io.github.LuizYokoyama.SchedularPayments.dto.CreateRecurrenceDto;
 import io.github.LuizYokoyama.SchedularPayments.dto.EditRecurrenceDto;
+import io.github.LuizYokoyama.SchedularPayments.dto.IRecurrenceDto;
 import io.github.LuizYokoyama.SchedularPayments.dto.RecurrenceDto;
 import io.github.LuizYokoyama.SchedularPayments.entity.*;
 import io.github.LuizYokoyama.SchedularPayments.exceptions.*;
@@ -152,7 +153,7 @@ public class SchedularService {
 
     }
 
-    private void generateNewEntries(Set<EntryEntity> entrySet, EditRecurrenceDto recurrenceDto, RecurrenceEntity recurrenceEntity){
+    private void generateNewEntries(Set<EntryEntity> entrySet, IRecurrenceDto recurrenceDto, RecurrenceEntity recurrenceEntity){
 
         AccountEntity accountEntity = recurrenceEntity.getAccountEntity();
         AccountEntity accountDestinationEntity = recurrenceEntity.getAccountDestination();
@@ -217,7 +218,7 @@ public class SchedularService {
         return recurrenceEntity;
     }
 
-    private void validateRecurrence(EditRecurrenceDto recurrence){
+    private void validateRecurrence(IRecurrenceDto recurrence){
 
         if (recurrence.getValue() == 0){
             throw new ValueZeroRuntimeException("Forneça um valor maior que zero!");

@@ -61,17 +61,16 @@ public class SchedularPaymentsControllerTests {
 
     @Test
     @Order(value = 2)
-    void testCreateRecurrence()  {
+    void testCreateRecurrenceFailed()  {
 
         Exception exception = assertThrows(RuntimeException.class, () -> schedularPaymentsController.createScheduledPayment(null) );
-        System.out.println(exception.getMessage());
 
     }
 
     @Test
     @Order(value = 3)
-    void testGetEmployeeByIdFailed() throws Exception {
+    void testPostRecurrenceFailed() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/v1/recurrences")).andExpect(status().isBadRequest());
-       // Assertions.assertEquals(employees.get(1).getName(), employeeRepository.findById(2).get().getName());
+
     }
 }

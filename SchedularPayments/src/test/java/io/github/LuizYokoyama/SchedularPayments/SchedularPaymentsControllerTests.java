@@ -45,7 +45,7 @@ public class SchedularPaymentsControllerTests {
     RecurrenceRepository recurrenceRepository;
 
     private final static CreateRecurrenceDto createRecurrenceDto;
-    private final static byte[] json;
+    private final static String json;
 
     @Container
     private static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:14.5")
@@ -64,7 +64,7 @@ public class SchedularPaymentsControllerTests {
 
         ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
         try {
-            json = mapper.writeValueAsBytes(createRecurrenceDto);
+            json = mapper.writeValueAsString(createRecurrenceDto);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

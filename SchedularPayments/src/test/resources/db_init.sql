@@ -57,4 +57,6 @@ CREATE TABLE IF NOT EXISTS public.tb_entry
     CONSTRAINT tb_entry_status_check CHECK (status >= 0 AND status <= 2)
 );
 
-INSERT INTO tb_account VALUES ( 1, 10, 'TEST NAME' )
+INSERT INTO tb_account VALUES ( 1, 10, 'TEST1 NAME1' );
+INSERT INTO tb_account VALUES ( 2, 20, 'TEST2 NAME2' );
+INSERT INTO tb_recurrence VALUES ( 1, 2, '2050-11-25', 10, 1, 22, '18404c10-7edc-4c21-b606-5193aab6a342',  'TEST RECURRENCE 1' );

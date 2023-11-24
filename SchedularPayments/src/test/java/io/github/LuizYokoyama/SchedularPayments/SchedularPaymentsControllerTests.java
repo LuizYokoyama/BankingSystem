@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.github.LuizYokoyama.SchedularPayments.controller.SchedularPaymentsController;
 import io.github.LuizYokoyama.SchedularPayments.dto.CreateRecurrenceDto;
+import io.github.LuizYokoyama.SchedularPayments.dto.EditRecurrenceDto;
+import io.github.LuizYokoyama.SchedularPayments.exceptions.BadRequestRuntimeException;
 import io.github.LuizYokoyama.SchedularPayments.repository.RecurrenceRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDate;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -39,10 +42,13 @@ public class SchedularPaymentsControllerTests {
     @Autowired
     RecurrenceRepository recurrenceRepository;
 
-    private final static CreateRecurrenceDto createRecurrenceDtoWithAccountNotExist;
-    private final static CreateRecurrenceDto createRecurrenceDto;
-    private final static String jsonCcreateRecurrenceDto;
-    private final static String jsonCcreateRecurrenceDtoWithAccountNotExist;
+    private final static CreateRecurrenceDto CREATE_RECURRENCE_DTO;
+    private final static CreateRecurrenceDto CREATE_RECURRENCE_DTO_ACCOUNT_NON_EXIST;
+    private final static CreateRecurrenceDto CREATE_RECURRENCE_DTO_TO_SAME_ACCOUNT;
+    private final static EditRecurrenceDto EDIT_RECURRENCE_DTO;
+    private final static String JSON_CREATE_RECURRENCE_DTO;
+    private final static String JSON_CREATE_RECURRENCE_DTO_ACCOUNT_NON_EXIST;
+    private final static String JSON_EDIT_RECURRENCE_DTO;
 
     @Container
     private static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:14.5")
@@ -54,20 +60,22 @@ public class SchedularPaymentsControllerTests {
     }
 
     static {
-        createRecurrenceDto = new CreateRecurrenceDto(1, "Test", LocalDate.now(),
-                                                        2, 5.1f, 1);
-        createRecurrenceDtoWithAccountNotExist = new CreateRecurrenceDto(5, "Test", LocalDate.now(),
+        CREATE_RECURRENCE_DTO = new CreateRecurrenceDto(1, "Test", LocalDate.now(),
+                                                        2, 5.1f, 2);
+        CREATE_RECURRENCE_DTO_ACCOUNT_NON_EXIST = new CreateRecurrenceDto(5, "Test", LocalDate.now(),
+                                                                            2, 5.1f, 1);
+        CREATE_RECURRENCE_DTO_TO_SAME_ACCOUNT = new CreateRecurrenceDto(1, "Test", LocalDate.now(),
                 2, 5.1f, 1);
-
+        EDIT_RECURRENCE_DTO = new EditRecurrenceDto(LocalDate.now(), 3, 22f );
 
         ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
         try {
-            jsonCcreateRecurrenceDto = mapper.writeValueAsString(createRecurrenceDto);
-            jsonCcreateRecurrenceDtoWithAccountNotExist = mapper.writeValueAsString(createRecurrenceDtoWithAccountNotExist);
+            JSON_CREATE_RECURRENCE_DTO = mapper.writeValueAsString(CREATE_RECURRENCE_DTO);
+            JSON_CREATE_RECURRENCE_DTO_ACCOUNT_NON_EXIST = mapper.writeValueAsString(CREATE_RECURRENCE_DTO_ACCOUNT_NON_EXIST);
+            JSON_EDIT_RECURRENCE_DTO = mapper.writeValueAsString(EDIT_RECURRENCE_DTO);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     @DynamicPropertySource
@@ -86,28 +94,61 @@ public class SchedularPaymentsControllerTests {
 
     @Test
     @Order(value = 2)
-    void testCreateRecurrenceFailed()  {
+    void testMethodCreateRecurrenceSameAccountFailed()  {
 
-        Exception exception = assertThrows(RuntimeException.class, () -> schedularPaymentsController.createScheduledPayment(createRecurrenceDto) );
-        System.out.println(exception.getMessage() + exception.getCause());
+        Exception exception = assertThrows(BadRequestRuntimeException.class, () -> schedularPaymentsController.createScheduledPayment(CREATE_RECURRENCE_DTO_TO_SAME_ACCOUNT));
+        assertEquals(exception.getMessage(), "Forneça uma conta de destino diferente desta conta" );
+
     }
 
     @Test
     @Order(value = 3)
-    void testPostRecurrenceFailed() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post("/v1/recurrences")).andExpect(status().isBadRequest());
-
+    void testPostRecurrenceWithAccountNotFound() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/v1/recurrences")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(JSON_CREATE_RECURRENCE_DTO_ACCOUNT_NON_EXIST)).andExpect(status().isNotFound());
     }
 
     @Test
     @Order(value = 4)
-    void testPostRecurrenceWithAccountNotFound() throws Exception {
-
-
+    void testPostRecurrenceWithAccount() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/v1/recurrences")
-                .contentType(MediaType.APPLICATION_JSON).content(jsonCcreateRecurrenceDtoWithAccountNotExist)).andExpect(status().isNotFound());
-
-
-
+                .contentType(MediaType.APPLICATION_JSON).content(JSON_CREATE_RECURRENCE_DTO)).andExpect(status().isCreated());
     }
+
+    @Test
+    @Order(value = 5)
+    void testPatchRecurrence() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.patch("/v1/recurrences/18404c10-7edc-4c21-b606-5193aab6a342")
+                .contentType(MediaType.APPLICATION_JSON).content(JSON_EDIT_RECURRENCE_DTO)).andExpect(status().isOk());
+    }
+
+    @Test
+    @Order(value = 6)
+    void testPatchRecurrenceNotFound() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.patch("/v1/recurrences/18404c10-7edc-4c21-b606-5193aab6a355")
+                .contentType(MediaType.APPLICATION_JSON).content(JSON_EDIT_RECURRENCE_DTO)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @Order(value = 7)
+    void testCancelRecurrence() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/v1/recurrences/18404c10-7edc-4c21-b606-5193aab6a342"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @Order(value = 8)
+    void testCancelRecurrenceAlreadCanceled() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/v1/recurrences/18404c10-7edc-4c21-b606-5193aab6a342"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(value = 9)
+    void testCancelRecurrenceNotFound() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/v1/recurrences/18404c10-7edc-4c21-b606-5193aab6a355"))
+                .andExpect(status().isNotFound());
+    }
+
 }

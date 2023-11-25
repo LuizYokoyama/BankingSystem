@@ -5,6 +5,9 @@ import io.github.LuizYokoyama.BankAccount.entity.AccountEntity;
 import io.github.LuizYokoyama.BankAccount.entity.EntryEntity;
 import io.github.LuizYokoyama.BankAccount.entity.EntryStatus;
 import io.github.LuizYokoyama.BankAccount.entity.OperationType;
+import io.github.LuizYokoyama.BankAccount.exceptions.DataBaseException;
+import io.github.LuizYokoyama.BankAccount.exceptions.NotFoundRuntimeException;
+import io.github.LuizYokoyama.BankAccount.exceptions.ValueZeroRuntimeException;
 import io.github.LuizYokoyama.BankAccount.repository.AccountRepository;
 import io.github.LuizYokoyama.BankAccount.repository.EntryRepository;
 import org.springframework.beans.BeanUtils;
@@ -31,34 +34,37 @@ public class AccountService {
     private EntryRepository entryRepository;
 
     @Transactional
-    public ResponseEntity<AccountCreatedDto> createAccount(CreateAccountDto accountDto){
+    public AccountCreatedDto createAccount(CreateAccountDto accountDto){
 
         AccountEntity accountEntity = new AccountEntity();
         BeanUtils.copyProperties(accountDto, accountEntity);
 
-        accountEntity = accountRepository.save(accountEntity);
+        try {
+            accountEntity = accountRepository.save(accountEntity);
+        }catch (Exception ex){
+            throw new DataBaseException("Falha ao salvar a conta!", ex.getCause());
+        }
 
         AccountCreatedDto accountCreatedDto = new AccountCreatedDto();
         BeanUtils.copyProperties(accountEntity, accountCreatedDto);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(accountCreatedDto);
+        return accountCreatedDto;
     }
 
     @Transactional
-    public ResponseEntity<EntryDto> deposit(Integer id, DepositDto depositDto) {
+    public EntryDto deposit(Integer id, DepositDto depositDto) {
 
         if (depositDto.getValue() < MIN_DEPOSIT_VALUE){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            throw new ValueZeroRuntimeException("Forneça um valor maior que zero!");
         }
 
-        Optional<AccountEntity> accountEntityOptional = accountRepository.findById(id);
-        if (!accountEntityOptional.isPresent()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-
-        AccountEntity accountEntity = accountEntityOptional.get();
+        AccountEntity accountEntity = findAccount(id);
         accountEntity.setBalance(accountEntity.getBalance() + depositDto.getValue());
-        accountEntity = accountRepository.save(accountEntity);
+        try {
+            accountEntity = accountRepository.save(accountEntity);
+        }catch (Exception ex){
+            throw new DataBaseException("Falha ao salvar a conta!", ex.getCause());
+        }
 
         EntryEntity entryEntity = new EntryEntity();
         entryEntity.setAccountEntity(accountEntity);
@@ -66,28 +72,39 @@ public class AccountService {
         entryEntity.setValue(depositDto.getValue());
         entryEntity.setOperationType(OperationType.CREDIT);
         entryEntity.setEntryStatus(EntryStatus.DONE);
-        entryEntity = entryRepository.save(entryEntity);
+        try {
+            entryEntity = entryRepository.save(entryEntity);
+        }catch (Exception ex){
+            throw new DataBaseException("Falha ao salvar a conta!", ex.getCause());
+        }
 
         EntryDto entryDto = new EntryDto();
         BeanUtils.copyProperties(entryEntity, entryDto);
         entryDto.setAccountId(entryEntity.getAccountEntity().getAccountId());
 
-        return ResponseEntity.status(HttpStatus.OK).body(entryDto);
+        return entryDto;
 
     }
 
-    public ResponseEntity<BankStatementDto> statement(Integer id, PeriodDto periodDto) {
+    public BankStatementDto statement(Integer id, PeriodDto periodDto) {
 
-        Optional<AccountEntity> accountEntityOptional = accountRepository.findById(id);
-        if ( !accountEntityOptional.isPresent() ){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
+        AccountEntity accountEntity = findAccount(id);
         AccountCreatedDto accountCreatedDto = new AccountCreatedDto();
-        BeanUtils.copyProperties(accountEntityOptional.get(), accountCreatedDto);
+        BeanUtils.copyProperties(accountEntity, accountCreatedDto);
         List<EntryDto> entryList = entryRepository.getStatement(id,
                 periodDto.getInitDate().atTime(0, 0, 0),
                 periodDto.getEndDate().atTime(23, 59, 59));
         BankStatementDto bankStatementDto = new BankStatementDto(accountCreatedDto, periodDto, entryList);
-        return  ResponseEntity.status(HttpStatus.OK).body(bankStatementDto);
+        return  bankStatementDto;
+    }
+
+    private AccountEntity findAccount(Integer id){
+
+        Optional<AccountEntity> accountEntityOptional = accountRepository.findById(id);
+        if (accountEntityOptional.isEmpty()){
+            throw new NotFoundRuntimeException("Conta não encontrada. Forceça uma conta válida.");
+        }
+        return accountEntityOptional.get();
+
     }
 }

@@ -10,7 +10,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Setter
-public class CreateAccountDto {
+public class CreateAccountDto{
 
     public static final int NAME_MAX_SIZE = 40;
 

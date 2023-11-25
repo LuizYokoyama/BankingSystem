@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +22,8 @@ public class BankAccountController {
     @PostMapping("accounts")
     public ResponseEntity<AccountCreatedDto> createAccount(@RequestBody CreateAccountDto createAccountDto) {
 
-        return accountService.createAccount(createAccountDto);
+        AccountCreatedDto accountCreatedDto = accountService.createAccount(createAccountDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(accountCreatedDto);
 
     }
 
@@ -30,7 +32,8 @@ public class BankAccountController {
     @PutMapping("accounts/{id}")
     public ResponseEntity<EntryDto> deposit(@PathVariable(value = "id") Integer id, @RequestBody DepositDto depositDto) {
 
-        return accountService.deposit(id, depositDto);
+        EntryDto entryDto = accountService.deposit(id, depositDto);
+        return ResponseEntity.status(HttpStatus.OK).body(entryDto);
 
     }
 
@@ -39,7 +42,8 @@ public class BankAccountController {
     @PutMapping("statements/{id}")
     public ResponseEntity<BankStatementDto> statement(@PathVariable(value = "id") Integer id, @RequestBody PeriodDto periodDto) {
 
-        return accountService.statement(id, periodDto);
+        BankStatementDto bankStatementDto = accountService.statement(id, periodDto);
+        return ResponseEntity.status(HttpStatus.OK).body(bankStatementDto);
 
     }
 

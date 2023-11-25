@@ -41,12 +41,23 @@ public class SchedularService {
 
         validateRecurrence(createRecurrenceDto);
 
-        Optional<AccountEntity> accountEntityOptional = accountRepository.findById(createRecurrenceDto.getAccountId());
+        Optional<AccountEntity> accountEntityOptional;
+        try {
+            accountEntityOptional = accountRepository.findById(createRecurrenceDto.getAccountId());
+        }catch (Exception ex){
+            throw new DataBaseException("Falha ao busca a conta!", ex.getCause());
+        }
+
         if (accountEntityOptional.isEmpty()){
             throw new NotFoundRuntimeException("Conta não encontrada. Forneça uma conta válida.");
         }
 
-        Optional<AccountEntity> accountDestinationEntityOptional = accountRepository.findById(createRecurrenceDto.getAccountDestinationID());
+        Optional<AccountEntity> accountDestinationEntityOptional;
+        try {
+            accountDestinationEntityOptional = accountRepository.findById(createRecurrenceDto.getAccountDestinationID());
+        }catch (Exception ex){
+            throw new DataBaseException("Falha ao busca a conta de destino!", ex.getCause());
+        }
         if (accountDestinationEntityOptional.isEmpty()){
             throw new NotFoundRuntimeException("Conta de destino não encontrada. Forneça uma conta de destino válida.");
         }
@@ -199,7 +210,12 @@ public class SchedularService {
 
     private RecurrenceEntity GetValidRecurrence(UUID uuid) {
 
-        Optional<RecurrenceEntity> recurrenceEntityOptional = recurrenceRepository.findById(uuid);
+        Optional<RecurrenceEntity> recurrenceEntityOptional;
+        try {
+            recurrenceEntityOptional = recurrenceRepository.findById(uuid);
+        }catch (Exception ex){
+            throw new DataBaseException("Falha ao buscar recorrência!", ex.getCause());
+        }
 
         if (recurrenceEntityOptional.isEmpty()){
             throw new NotFoundRuntimeException("Recorrência não encontrada. Forneça uma recorrência válida.");

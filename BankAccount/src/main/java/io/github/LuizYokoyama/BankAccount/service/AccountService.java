@@ -12,8 +12,6 @@ import io.github.LuizYokoyama.BankAccount.repository.AccountRepository;
 import io.github.LuizYokoyama.BankAccount.repository.EntryRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -83,7 +81,6 @@ public class AccountService {
         entryDto.setAccountId(entryEntity.getAccountEntity().getAccountId());
 
         return entryDto;
-
     }
 
     public BankStatementDto statement(Integer id, PeriodDto periodDto) {
@@ -91,16 +88,28 @@ public class AccountService {
         AccountEntity accountEntity = findAccount(id);
         AccountCreatedDto accountCreatedDto = new AccountCreatedDto();
         BeanUtils.copyProperties(accountEntity, accountCreatedDto);
-        List<EntryDto> entryList = entryRepository.getStatement(id,
-                periodDto.getInitDate().atTime(0, 0, 0),
-                periodDto.getEndDate().atTime(23, 59, 59));
+        List<EntryDto> entryList;
+        try {
+           entryList = entryRepository.getStatement(id,
+                    periodDto.getInitDate().atTime(0, 0, 0),
+                    periodDto.getEndDate().atTime(23, 59, 59));
+        }catch (Exception ex){
+            throw new DataBaseException("Falha ao buscar entradas da conta!", ex.getCause());
+        }
         BankStatementDto bankStatementDto = new BankStatementDto(accountCreatedDto, periodDto, entryList);
+
         return  bankStatementDto;
+
     }
 
     private AccountEntity findAccount(Integer id){
 
-        Optional<AccountEntity> accountEntityOptional = accountRepository.findById(id);
+        Optional<AccountEntity> accountEntityOptional;
+        try {
+            accountEntityOptional = accountRepository.findById(id);
+        }catch (Exception ex){
+            throw new DataBaseException("Falha ao buscar a conta!", ex.getCause());
+        }
         if (accountEntityOptional.isEmpty()){
             throw new NotFoundRuntimeException("Conta não encontrada. Forceça uma conta válida.");
         }

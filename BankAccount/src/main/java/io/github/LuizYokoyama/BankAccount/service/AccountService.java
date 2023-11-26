@@ -10,11 +10,13 @@ import io.github.LuizYokoyama.BankAccount.exceptions.NotFoundRuntimeException;
 import io.github.LuizYokoyama.BankAccount.exceptions.ValueZeroRuntimeException;
 import io.github.LuizYokoyama.BankAccount.repository.AccountRepository;
 import io.github.LuizYokoyama.BankAccount.repository.EntryRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,7 +34,7 @@ public class AccountService {
     private EntryRepository entryRepository;
 
     @Transactional
-    public AccountCreatedDto createAccount(CreateAccountDto accountDto){
+    public AccountCreatedDto createAccount(@Valid CreateAccountDto accountDto){
 
         AccountEntity accountEntity = new AccountEntity();
         BeanUtils.copyProperties(accountDto, accountEntity);

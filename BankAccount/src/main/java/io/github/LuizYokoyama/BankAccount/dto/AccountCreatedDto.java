@@ -1,10 +1,10 @@
 package io.github.LuizYokoyama.BankAccount.dto;
 
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor

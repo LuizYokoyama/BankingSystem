@@ -1,6 +1,6 @@
 package io.github.LuizYokoyama.BankAccount.dto;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Positive;
 import lombok.*;
 
 @NoArgsConstructor

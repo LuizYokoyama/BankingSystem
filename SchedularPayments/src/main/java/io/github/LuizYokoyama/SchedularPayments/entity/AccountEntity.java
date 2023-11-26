@@ -1,6 +1,7 @@
 package io.github.LuizYokoyama.SchedularPayments.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import lombok.*;
 
 import java.util.Set;
@@ -16,7 +17,6 @@ import java.util.Set;
 public class AccountEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "account_id")
     @EqualsAndHashCode.Include
     private int accountId;
@@ -29,9 +29,11 @@ public class AccountEntity {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "account_id")
+    @Valid
     private Set<RecurrenceEntity> recurrenceList;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "account_id")
+    @Valid
     private Set<EntryEntity> entryList;
 }

@@ -1,5 +1,8 @@
 package io.github.LuizYokoyama.BankAccount.dto;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +16,11 @@ import java.time.LocalDate;
 @Setter
 public class PeriodDto {
 
+    @PastOrPresent
+    @NotNull
     private LocalDate initDate;
+
+    @NotNull
     private LocalDate endDate;
 
 }

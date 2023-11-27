@@ -13,10 +13,11 @@ import lombok.*;
 @Setter
 public class CreateAccountDto{
 
-    public static final int NAME_MAX_SIZE = 4;
+    public static final int NAME_MAX_SIZE = 40;
+    public static final int NAME_MIN_SIZE  = 3;
 
     @NotBlank(message = "Forneça o nome do titular!")
-    @Size(max = NAME_MAX_SIZE, min = 1)
+    @Size(max = NAME_MAX_SIZE, min = NAME_MIN_SIZE)
     private String holderName;
 
     @PositiveOrZero

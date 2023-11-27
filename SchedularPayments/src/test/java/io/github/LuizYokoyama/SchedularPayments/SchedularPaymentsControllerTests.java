@@ -95,15 +95,13 @@ public class SchedularPaymentsControllerTests {
     @Test
     @Order(value = 2)
     void testMethodCreateRecurrenceSameAccountFailed()  {
-
         Exception exception = assertThrows(BadRequestRuntimeException.class, () -> schedularPaymentsController.createScheduledPayment(CREATE_RECURRENCE_DTO_TO_SAME_ACCOUNT));
         assertEquals(exception.getMessage(), "Forneça uma conta de destino diferente desta conta" );
-
     }
 
     @Test
     @Order(value = 3)
-    void testPostRecurrenceWithAccountNotFound() throws Exception {
+    void testPostRecurrenceWithAccountNotFoundFail() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/v1/recurrences")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(JSON_CREATE_RECURRENCE_DTO_ACCOUNT_NON_EXIST)).andExpect(status().isNotFound());
@@ -111,42 +109,42 @@ public class SchedularPaymentsControllerTests {
 
     @Test
     @Order(value = 4)
-    void testPostRecurrenceWithAccount() throws Exception {
+    void testPostRecurrenceWithAccountOK() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/v1/recurrences")
                 .contentType(MediaType.APPLICATION_JSON).content(JSON_CREATE_RECURRENCE_DTO)).andExpect(status().isCreated());
     }
 
     @Test
     @Order(value = 5)
-    void testPatchRecurrence() throws Exception {
+    void testPatchRecurrenceOK() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.patch("/v1/recurrences/18404c10-7edc-4c21-b606-5193aab6a342")
                 .contentType(MediaType.APPLICATION_JSON).content(JSON_EDIT_RECURRENCE_DTO)).andExpect(status().isOk());
     }
 
     @Test
     @Order(value = 6)
-    void testPatchRecurrenceNotFound() throws Exception {
+    void testPatchRecurrenceNotFoundFail() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.patch("/v1/recurrences/18404c10-7edc-4c21-b606-5193aab6a355")
                 .contentType(MediaType.APPLICATION_JSON).content(JSON_EDIT_RECURRENCE_DTO)).andExpect(status().isNotFound());
     }
 
     @Test
     @Order(value = 7)
-    void testCancelRecurrence() throws Exception {
+    void testCancelRecurrenceOK() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/v1/recurrences/18404c10-7edc-4c21-b606-5193aab6a342"))
                 .andExpect(status().isOk());
     }
 
     @Test
     @Order(value = 8)
-    void testCancelRecurrenceAlreadCanceled() throws Exception {
+    void testCancelRecurrenceAlreadCanceledFail() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/v1/recurrences/18404c10-7edc-4c21-b606-5193aab6a342"))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     @Order(value = 9)
-    void testCancelRecurrenceNotFound() throws Exception {
+    void testCancelRecurrenceNotFoundFail() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/v1/recurrences/18404c10-7edc-4c21-b606-5193aab6a355"))
                 .andExpect(status().isNotFound());
     }

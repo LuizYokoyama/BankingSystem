@@ -10,6 +10,7 @@ import io.github.LuizYokoyama.SchedularPayments.repository.AccountRepository;
 import io.github.LuizYokoyama.SchedularPayments.repository.EntryRepository;
 import io.github.LuizYokoyama.SchedularPayments.repository.RecurrenceRepository;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,7 @@ public class SchedularService {
     private EntryRepository entryRepository;
 
     @Transactional
-    public RecurrenceDto schedule(CreateRecurrenceDto createRecurrenceDto) {
+    public RecurrenceDto schedule(@Valid CreateRecurrenceDto createRecurrenceDto) {
 
         validateRecurrence(createRecurrenceDto);
 
@@ -92,7 +93,7 @@ public class SchedularService {
     }
 
     @Transactional
-    public RecurrenceDto editScheduled(UUID uuid, EditRecurrenceDto editRecurrenceDto) {
+    public RecurrenceDto editScheduled(UUID uuid, @Valid EditRecurrenceDto editRecurrenceDto) {
 
         validateRecurrence(editRecurrenceDto);
 

@@ -52,7 +52,7 @@ public class AccountService {
     }
 
     @Transactional
-    public EntryDto deposit(Integer id, DepositDto depositDto) {
+    public EntryDto deposit(Integer id, @Valid DepositDto depositDto) {
 
         if (depositDto.getValue() < MIN_DEPOSIT_VALUE){
             throw new ValueZeroRuntimeException("Forneça um valor maior que zero!");
@@ -85,7 +85,7 @@ public class AccountService {
         return entryDto;
     }
 
-    public BankStatementDto statement(Integer id, PeriodDto periodDto) {
+    public BankStatementDto statement(Integer id, @Valid PeriodDto periodDto) {
 
         AccountEntity accountEntity = findAccount(id);
         AccountCreatedDto accountCreatedDto = new AccountCreatedDto();

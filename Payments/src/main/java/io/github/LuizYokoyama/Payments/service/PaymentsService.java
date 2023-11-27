@@ -1,6 +1,7 @@
 package io.github.LuizYokoyama.Payments.service;
 
 import io.github.LuizYokoyama.Payments.entity.*;
+import io.github.LuizYokoyama.Payments.exception.DataBaseException;
 import io.github.LuizYokoyama.Payments.repository.RecurrenceRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,12 @@ public class PaymentsService {
 
     public int executePays(){
         int operationsCount = 0;
-        Set<RecurrenceEntity> recurrenceEntitySet = recurrenceRepository.getPendingRecurrences(RecurrenceStatus.PENDING);
+        Set<RecurrenceEntity> recurrenceEntitySet;
+        try {
+            recurrenceEntitySet = recurrenceRepository.getPendingRecurrences(RecurrenceStatus.PENDING);
+        }catch (Exception ex){
+            throw new DataBaseException("Falha ao buscar recorrências pendêntes!", ex.getCause());
+        }
 
         LocalDateTime today = LocalDate.now().atTime(0, 0);
 
@@ -53,7 +59,6 @@ public class PaymentsService {
                     }
 
                     if (entryCredit != null && entryDebit != null){
-
                         if ( !entryEntityIterator.hasNext() ){
                             recurrence.setRecurrenceStatus(RecurrenceStatus.DONE);
                         }
@@ -64,11 +69,9 @@ public class PaymentsService {
                         }
                         break;
                     }
-
                 }
             }
         }
-
 
         return operationsCount;
     }
@@ -89,11 +92,13 @@ public class PaymentsService {
         entryCredit.setRecurrenceEntity(null);
         accountDebit.setBalance(accountDebit.getBalance() - entryDebit.getValue());
         accountCredit.setBalance(accountCredit.getBalance() + entryDebit.getValue());
-
-        recurrenceRepository.save(recurrence);
+        try {
+            recurrenceRepository.save(recurrence);
+        }catch (Exception ex){
+            throw new DataBaseException("Falha ao salvar recorrências!", ex.getCause());
+        }
 
         return true;
-
     }
 
 

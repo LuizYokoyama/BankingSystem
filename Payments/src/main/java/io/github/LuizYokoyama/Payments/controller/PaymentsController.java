@@ -14,7 +14,6 @@ public class PaymentsController {
     @Autowired
     private PaymentsService paymentsService;
 
-
     @Operation(summary = "make scheduled payments for today.")
     @ApiResponses({ @ApiResponse(responseCode = "200", description = "Returns the number of scheduled payments executeds.")})
     @PutMapping("payments")

@@ -8,7 +8,7 @@ services:
 
     volumes:
       - ./data/db:/postgresql
-      - ./sql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+      - ./sql/V1_create_tables.sql:/docker-entrypoint-initdb.d/V1_create_tables.sql
 
     environment:
       POSTGRES_USER: admin
@@ -35,6 +35,38 @@ services:
     networks:
       - microservices-network
 
+  schedular_payments:
+    container_name: schedular_service
+    image: schedular_payments:latest
+    build:
+      dockerfile: Dockerfile
+      context: ./SchedularPayments
+    ports:
+      - "8083:8083"
+    networks:
+      - microservices-network
+
+  bank_account:
+    container_name: bank_account
+    image: bank_account:latest
+    build:
+      dockerfile: Dockerfile
+      context: ./BankAccount
+    ports:
+      - "8082:8082"
+    networks:
+      - microservices-network
+
+  payments:
+    container_name: payments_service
+    image: payments:latest
+    build:
+      dockerfile: Dockerfile
+      context: ./Payments
+    ports:
+      - "8081:8081"
+    networks:
+      - microservices-network
 
 networks:
   microservices-network:

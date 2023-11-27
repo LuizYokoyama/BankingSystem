@@ -19,6 +19,7 @@ public class AccountEntity {
     @Id
     @Column(name = "account_id")
     @EqualsAndHashCode.Include
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int accountId;
 
     @Column(name = "holder_name", nullable = false)
@@ -29,7 +30,6 @@ public class AccountEntity {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "account_id")
-    @Valid
     private Set<RecurrenceEntity> recurrenceList;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)

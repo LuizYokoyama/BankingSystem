@@ -17,6 +17,7 @@ public class AccountEntity {
 
     @Id
     @Column(name = "account_id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @EqualsAndHashCode.Include
     private int accountId;
 

@@ -8,6 +8,7 @@ import io.github.LuizYokoyama.BankAccount.dto.CreateAccountDto;
 import io.github.LuizYokoyama.BankAccount.dto.DepositDto;
 import io.github.LuizYokoyama.BankAccount.dto.PeriodDto;
 import io.github.LuizYokoyama.BankAccount.repository.AccountRepository;
+import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,6 +119,7 @@ public class BankAccountControllerTest {
 
     @Test
     @Order(value = 4)
+    @Transactional
     void testPostAccountOK() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/v1/accounts")
                 .contentType(MediaType.APPLICATION_JSON)

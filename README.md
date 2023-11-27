@@ -4,11 +4,11 @@
 
 ### Instruções gerais de execução:
 
-* No diretorio raiz *BankingSystem* execute o seguinte comando:
+* No diretorio raiz *BankingSystem* execute os seguintes comandos:
 
-***docker-compose up***
+***mvn clean install -DskipTests***
 
-* Entre em cada subdiretorio *BankAccount, Payments e SchedulerPayments* e execute cada um destes serviços.
+***docker-compose up --build***
 
 #### Acesse com um browser a documentação dos endpoints no Swagger:
 

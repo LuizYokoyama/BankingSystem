@@ -29,7 +29,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 public class PaymentsControllerTests {
 
-    private final static LocalDate LOCAL_DATE = LocalDate.of(2050, 11, 25);
     @Autowired
     private MockMvc mockMvc;
 

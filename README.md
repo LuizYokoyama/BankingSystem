@@ -6,7 +6,7 @@
 
 * No diretorio raiz *BankingSystem* execute os seguintes comandos:
 
-***mvn clean install -DskipTests***
+***mvn clean package -DskipTests***
 
 ***docker-compose up --build***
 

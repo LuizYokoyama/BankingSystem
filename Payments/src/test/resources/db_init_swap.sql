@@ -1,5 +1,4 @@
 
-
 CREATE TABLE IF NOT EXISTS public.tb_account
 (
     account_id serial NOT NULL,

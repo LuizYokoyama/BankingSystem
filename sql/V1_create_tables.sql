@@ -1,7 +1,3 @@
-DROP TABLE IF EXISTS public.tb_entry
-DROP TABLE IF EXISTS public.tb_recurrence
-DROP TABLE IF EXISTS public.tb_account
-
 
 CREATE TABLE IF NOT EXISTS public.tb_account
 (

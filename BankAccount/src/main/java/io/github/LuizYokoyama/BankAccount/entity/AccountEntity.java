@@ -3,6 +3,7 @@ package io.github.LuizYokoyama.BankAccount.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
@@ -24,8 +25,11 @@ public class AccountEntity {
     @Column(name = "holder_name", nullable = false)
     private String holderName;
 
-    @Column(name = "balance", nullable = false)
-    private float balance;
+    @Column(name = "aggregated_balance", nullable = false)
+    private float aggregatedBalance;
+
+    @Column(name = "aggregation_date_time", nullable = false)
+    private LocalDateTime entryDateTime;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "account_id")

@@ -68,8 +68,8 @@ public class BankAccountControllerTest {
     }
 
     static {
-        CREATE_ACCOUNT_DTO = new CreateAccountDto("Name Test", 500.5f);
-        CREATE_RECURRENCE_DTO_WITHOUT_NAME = new CreateAccountDto("", -100.55f);
+        CREATE_ACCOUNT_DTO = new CreateAccountDto("Name Test");
+        CREATE_RECURRENCE_DTO_WITHOUT_NAME = new CreateAccountDto("");
         DEPOSIT_DTO = new DepositDto(14f);
         DEPOSIT_DTO_WITHOUT_VALUE = new DepositDto(0);
         PERIOD_DTO = new PeriodDto(LocalDate.now(), LocalDate.now());

@@ -3,7 +3,8 @@
 CREATE TABLE IF NOT EXISTS public.tb_account
 (
     account_id serial NOT NULL,
-    balance real NOT NULL,
+    aggregated_balance real NOT NULL,
+    aggregation_date_time timestamp(6) without time zone NOT NULL,
     holder_name character varying(42) NOT NULL,
     CONSTRAINT tb_account_pkey PRIMARY KEY (account_id)
 );
@@ -57,8 +58,8 @@ CREATE TABLE IF NOT EXISTS public.tb_entry
     CONSTRAINT tb_entry_status_check CHECK (status >= 0 AND status <= 2)
 );
 
-INSERT INTO tb_account VALUES ( 1, 100, 'TEST1 NAME1' );
-INSERT INTO tb_account VALUES ( 2, 200, 'TEST2 NAME2' );
+INSERT INTO tb_account VALUES ( 1, 100, '2020-11-25', 'TEST1 NAME1' );
+INSERT INTO tb_account VALUES ( 2, 200, '2020-11-25', 'TEST2 NAME2' );
 INSERT INTO tb_recurrence VALUES ( 1, 2, 'data_atual', 10, 1, 22, '18404c10-7edc-4c21-b606-5193aab6a342',  'TEST RECURRENCE 1' );
 INSERT INTO tb_entry VALUES ( 1, 0, 2, 1, 9, 'data_atual', '3fa85f64-5717-4562-b3fc-2c963f66afa6','18404c10-7edc-4c21-b606-5193aab6a342' );
 INSERT INTO tb_entry VALUES ( 2, 1, 1, 1, 9, 'data_atual', 'faed97ca-3bc2-48a5-903a-12d3745e5da6','18404c10-7edc-4c21-b606-5193aab6a342' );

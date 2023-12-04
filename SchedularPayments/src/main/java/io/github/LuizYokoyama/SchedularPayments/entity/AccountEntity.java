@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
@@ -18,15 +19,18 @@ public class AccountEntity {
 
     @Id
     @Column(name = "account_id")
-    @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @EqualsAndHashCode.Include
     private int accountId;
 
     @Column(name = "holder_name", nullable = false)
     private String holderName;
 
-    @Column(name = "balance", nullable = false)
+    @Column(name = "aggregated_balance", nullable = false)
     private float balance;
+
+    @Column(name = "aggregation_date_time", nullable = false)
+    private LocalDateTime entryDateTime;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "account_id")
@@ -34,6 +38,5 @@ public class AccountEntity {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "account_id")
-    @Valid
     private Set<EntryEntity> entryList;
 }

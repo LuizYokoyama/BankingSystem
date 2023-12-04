@@ -3,7 +3,8 @@
 CREATE TABLE IF NOT EXISTS public.tb_account
 (
     account_id serial NOT NULL,
-    balance real NOT NULL,
+    aggregated_balance real NOT NULL,
+    aggregation_date_time timestamp(6) without time zone NOT NULL,
     holder_name character varying(42) NOT NULL,
     CONSTRAINT tb_account_pkey PRIMARY KEY (account_id)
 );

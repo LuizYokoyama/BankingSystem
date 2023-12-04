@@ -20,7 +20,4 @@ public class CreateAccountDto{
     @Size(max = NAME_MAX_SIZE, min = NAME_MIN_SIZE)
     private String holderName;
 
-    @PositiveOrZero
-    private float balance;
-
 }

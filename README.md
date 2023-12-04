@@ -8,6 +8,8 @@
 
 ***mvn clean package -DskipTests***
 
+***docker-compose down***
+
 ***docker-compose up --build***
 
 #### Acesse com um browser a documentação dos endpoints no Swagger:

@@ -38,6 +38,8 @@ public class AccountService {
 
         AccountEntity accountEntity = new AccountEntity();
         BeanUtils.copyProperties(accountDto, accountEntity);
+        accountEntity.setEntryDateTime(LocalDateTime.now());
+        accountEntity.setAggregatedBalance(0);
 
         try {
             accountEntity = accountRepository.save(accountEntity);
@@ -59,7 +61,7 @@ public class AccountService {
         }
 
         AccountEntity accountEntity = findAccount(id);
-        accountEntity.setBalance(accountEntity.getBalance() + depositDto.getValue());
+        accountEntity.setAggregatedBalance(accountEntity.getAggregatedBalance() + depositDto.getValue());
         try {
             accountEntity = accountRepository.save(accountEntity);
         }catch (Exception ex){

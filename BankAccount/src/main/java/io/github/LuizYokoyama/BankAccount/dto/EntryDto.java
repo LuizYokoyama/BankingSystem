@@ -1,6 +1,5 @@
 package io.github.LuizYokoyama.BankAccount.dto;
 
-import io.github.LuizYokoyama.BankAccount.entity.EntryStatus;
 import io.github.LuizYokoyama.BankAccount.entity.OperationType;
 import lombok.*;
 
@@ -24,7 +23,5 @@ public class EntryDto {
     private float value;
 
     private LocalDateTime entryDateTime;
-
-    private EntryStatus entryStatus;
 
 }

@@ -13,8 +13,8 @@ import java.util.List;
 @Getter
 @Setter
 public class BankStatementDto {
-    private AccountCreatedDto accountCreatedDto;
-    private PeriodDto periodDto;
+    private AccountCreatedDto account;
+    private PeriodDto period;
     @Valid
     private List<EntryDto> entryList;
 }

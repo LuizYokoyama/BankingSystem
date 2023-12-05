@@ -27,7 +27,7 @@ public class CreateRecurrenceDto implements IRecurrenceDto{
     @Positive
     @Max(value = MAX_DURATION, message = "Forneça no máximo a duração de " + MAX_DURATION + " recorrências!")
     @Min(value = MIN_DURATION, message = "Forneça no mínimo a duração de " + MIN_DURATION + " recorrência!")
-    private int duration;
+    private int monthsDuration;
 
     @Positive
     private float value;

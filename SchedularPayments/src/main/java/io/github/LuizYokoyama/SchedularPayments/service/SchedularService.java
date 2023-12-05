@@ -100,7 +100,7 @@ public class SchedularService {
         RecurrenceEntity recurrenceEntity = GetValidRecurrence(uuid);
 
         if (recurrenceEntity.getValue() == editRecurrenceDto.getValue() &&
-                recurrenceEntity.getDuration() == editRecurrenceDto.getDuration() &&
+                recurrenceEntity.getMonthsDuration() == editRecurrenceDto.getMonthsDuration() &&
                 recurrenceEntity.getOccurrenceDate().isEqual(editRecurrenceDto.getOccurrenceDate())){
             throw new BadRequestRuntimeException("Não há alteração nos dados desta recorrênca. Verifique se os dados estão corretos.");
         }
@@ -117,7 +117,7 @@ public class SchedularService {
         generateNewEntries(entryEntitySet, editRecurrenceDto, recurrenceEntity);
 
         recurrenceEntity.setValue(editRecurrenceDto.getValue());
-        recurrenceEntity.setDuration(editRecurrenceDto.getDuration());
+        recurrenceEntity.setMonthsDuration(editRecurrenceDto.getMonthsDuration());
         recurrenceEntity.setOccurrenceDate(editRecurrenceDto.getOccurrenceDate());
         recurrenceEntity.setRecurrenceStatus(RecurrenceStatus.PENDING);
         try {
@@ -170,7 +170,7 @@ public class SchedularService {
         AccountEntity accountEntity = recurrenceEntity.getAccountEntity();
         AccountEntity accountDestinationEntity = recurrenceEntity.getAccountDestination();
 
-        for (int i = 0; i < recurrenceDto.getDuration(); i++){
+        for (int i = 0; i < recurrenceDto.getMonthsDuration(); i++){
 
             LocalDateTime entryDate = recurrenceDto.getOccurrenceDate().plusMonths(i).atTime(0, 0);
 
@@ -196,7 +196,7 @@ public class SchedularService {
             entryEntityToDebit.setAccountEntity(accountEntity); //will send the amount
             entryEntityToDebit.setOriginEntity(accountDestinationEntity); //will receive the amount
             entryEntityToDebit.setEntryDateTime(entryDate);
-            entryEntityToDebit.setValue(recurrenceDto.getValue());
+            entryEntityToDebit.setValue( - recurrenceDto.getValue());
             entryEntityToDebit.setOperationType(OperationType.DEBIT);
             entryEntityToDebit.setEntryStatus(EntryStatus.PENDING);
             try {

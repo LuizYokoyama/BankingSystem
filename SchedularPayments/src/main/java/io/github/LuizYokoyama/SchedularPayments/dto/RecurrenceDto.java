@@ -2,6 +2,7 @@ package io.github.LuizYokoyama.SchedularPayments.dto;
 
 import io.github.LuizYokoyama.SchedularPayments.entity.RecurrenceStatus;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.*;
 
@@ -29,7 +30,8 @@ public class RecurrenceDto implements IRecurrenceDto{
     private LocalDate occurrenceDate;
 
     @Min(MIN_DURATION)
-    private int duration;
+    @Max(MAX_DURATION)
+    private int monthsDuration;
 
     private float value;
 

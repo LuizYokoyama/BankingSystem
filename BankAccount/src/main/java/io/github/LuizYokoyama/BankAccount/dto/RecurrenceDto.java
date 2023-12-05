@@ -22,7 +22,7 @@ public class RecurrenceDto {
 
     private LocalDate occurrenceDate;
 
-    private int duration;
+    private int monthsDuration;
 
     private float value;
 

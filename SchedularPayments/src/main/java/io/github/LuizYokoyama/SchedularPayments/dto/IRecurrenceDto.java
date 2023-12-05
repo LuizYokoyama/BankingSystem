@@ -12,9 +12,9 @@ public interface IRecurrenceDto {
 
     public void setOccurrenceDate(LocalDate occurrenceDate);
 
-    public int getDuration() ;
+    public int getMonthsDuration() ;
 
-    public void setDuration(int duration);
+    public void setMonthsDuration(int duration);
 
     public float getValue();
 

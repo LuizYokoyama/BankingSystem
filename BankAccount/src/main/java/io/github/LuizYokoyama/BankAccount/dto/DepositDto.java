@@ -1,5 +1,6 @@
 package io.github.LuizYokoyama.BankAccount.dto;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
 

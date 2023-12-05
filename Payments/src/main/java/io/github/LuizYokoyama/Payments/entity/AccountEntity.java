@@ -26,10 +26,10 @@ public class AccountEntity {
     private String holderName;
 
     @Column(name = "aggregated_balance", nullable = false)
-    private float balance;
+    private float aggregatedBalance;
 
     @Column(name = "aggregation_date_time", nullable = false)
-    private LocalDateTime entryDateTime;
+    private LocalDateTime aggregationDateTime;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "account_id")
@@ -38,4 +38,5 @@ public class AccountEntity {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "account_id")
     private Set<EntryEntity> entryList;
+
 }

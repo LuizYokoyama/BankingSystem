@@ -24,7 +24,7 @@ public class AccountDto {
     @Size(max = NAME_MAX_SIZE)
     private String holderName;
 
-    private float balance;
+    private float aggregatedBalance;
 
     private Set<RecurrenceDto> recurrenceList;
 

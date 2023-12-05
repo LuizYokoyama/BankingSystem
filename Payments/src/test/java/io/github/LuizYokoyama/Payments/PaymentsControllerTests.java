@@ -97,7 +97,7 @@ public class PaymentsControllerTests {
 
     @Test
     @Order(value = 3)
-    void testPutPaymentsOneExec() throws Exception {
+    void testPutPaymentsExpectOneExec() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.put("/v1/payments"))
                 .andExpect(status().isOk())
                 .andExpect((jsonPath("$").value("1")));
@@ -106,8 +106,24 @@ public class PaymentsControllerTests {
 
     @Test
     @Order(value = 4)
-    void testPutPaymentsZeroExec() throws Exception {
+    void testPutPaymentsExpectZeroExec() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.put("/v1/payments"))
+                .andExpect(status().isOk())
+                .andExpect((jsonPath("$").value("0")));
+    }
+
+    @Test
+    @Order(value = 5)
+    void testPutBalanceAggregationExpectTwoExec() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.put("/v1/aggregate"))
+                .andExpect(status().isOk())
+                .andExpect((jsonPath("$").value("2")));
+    }
+
+    @Test
+    @Order(value = 5)
+    void testPutBalanceAggregationExpectZeroExec() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.put("/v1/aggregate"))
                 .andExpect(status().isOk())
                 .andExpect((jsonPath("$").value("0")));
     }

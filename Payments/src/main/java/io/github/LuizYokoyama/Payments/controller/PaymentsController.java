@@ -23,5 +23,14 @@ public class PaymentsController {
 
     }
 
+    @Operation(summary = "execute balance agrregation to all accounts now.")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "Returns the number of accounts with balance aggregated now.")})
+    @PutMapping("aggregate")
+    public int executeBalanceAggregation() {
+
+        return paymentsService.executeAggregation();
+
+    }
+
 
 }

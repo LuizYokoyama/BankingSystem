@@ -29,7 +29,7 @@ public class AccountEntity {
     private float aggregatedBalance;
 
     @Column(name = "aggregation_date_time", nullable = false)
-    private LocalDateTime entryDateTime;
+    private LocalDateTime aggregationDateTime;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "account_id")

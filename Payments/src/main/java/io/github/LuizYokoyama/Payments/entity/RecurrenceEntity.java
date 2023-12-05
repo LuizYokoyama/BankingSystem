@@ -36,7 +36,7 @@ public class RecurrenceEntity {
     private LocalDate occurrenceDate;
 
     @Column(name = "recurrence_duration", nullable = false)
-    private int duration;
+    private int monthsDuration;
 
     @Column(name = "value", nullable = false)
     private float value;

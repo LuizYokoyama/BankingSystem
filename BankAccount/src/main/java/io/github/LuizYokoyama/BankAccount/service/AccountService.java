@@ -38,7 +38,7 @@ public class AccountService {
 
         AccountEntity accountEntity = new AccountEntity();
         BeanUtils.copyProperties(accountDto, accountEntity);
-        accountEntity.setEntryDateTime(LocalDateTime.now());
+        accountEntity.setAggregationDateTime(LocalDateTime.now());
         accountEntity.setAggregatedBalance(0);
 
         try {
@@ -61,7 +61,7 @@ public class AccountService {
         }
 
         AccountEntity accountEntity = findAccount(id);
-        accountEntity.setAggregatedBalance(accountEntity.getAggregatedBalance() + depositDto.getValue());
+
         try {
             accountEntity = accountRepository.save(accountEntity);
         }catch (Exception ex){
@@ -90,8 +90,10 @@ public class AccountService {
     public BankStatementDto statement(Integer id, @Valid PeriodDto periodDto) {
 
         AccountEntity accountEntity = findAccount(id);
+        float balance = getBalance(accountEntity);
         AccountCreatedDto accountCreatedDto = new AccountCreatedDto();
         BeanUtils.copyProperties(accountEntity, accountCreatedDto);
+        accountCreatedDto.setBalance(balance);
         List<EntryDto> entryList;
         try {
            entryList = entryRepository.getStatement(id,
@@ -118,6 +120,24 @@ public class AccountService {
             throw new NotFoundRuntimeException("Conta não encontrada. Forceça uma conta válida.");
         }
         return accountEntityOptional.get();
-
     }
+
+    private float getBalance(AccountEntity account){
+
+        float lastAggregatedBalance = account.getAggregatedBalance();
+        LocalDateTime lastTime = account.getAggregationDateTime();
+        Float newAggregatedBalance;
+        try {
+            newAggregatedBalance = entryRepository.aggregateBalanceSince(lastTime, account);
+        }catch (Exception ex){
+            throw new DataBaseException("Falha ao buscar o saldo da conta!", ex.getCause());
+        }
+
+        if (newAggregatedBalance == null){
+            return lastAggregatedBalance;
+        }
+
+        return lastAggregatedBalance + newAggregatedBalance;
+    }
+
 }

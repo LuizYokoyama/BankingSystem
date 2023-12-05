@@ -15,7 +15,7 @@ import java.util.UUID;
 public interface RecurrenceRepository extends JpaRepository<RecurrenceEntity, UUID> {
 
     @Query("SELECT e " +
-            "FROM RecurrenceEntity e WHERE e.recurrenceStatus = :pending" )
-    Set<RecurrenceEntity> getPendingRecurrences( @Param("pending") RecurrenceStatus pending);
+            "FROM RecurrenceEntity e WHERE e.recurrenceStatus = io.github.LuizYokoyama.Payments.entity.RecurrenceStatus.PENDING" )
+    Set<RecurrenceEntity> getPendingRecurrences();
 
 }

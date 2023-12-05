@@ -1,6 +1,7 @@
 package io.github.LuizYokoyama.BankAccount.repository;
 
 import io.github.LuizYokoyama.BankAccount.dto.EntryDto;
+import io.github.LuizYokoyama.BankAccount.entity.AccountEntity;
 import io.github.LuizYokoyama.BankAccount.entity.EntryEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -19,5 +20,10 @@ public interface EntryRepository extends JpaRepository<EntryEntity, UUID> {
             " AND e.entryStatus = io.github.LuizYokoyama.BankAccount.entity.EntryStatus.DONE" +
             " ORDER BY e.entryDateTime")
     List<EntryDto> getStatement(@Param("id") Integer id, @Param("initDate") LocalDateTime initDate, @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT SUM(e.value) " +
+            "FROM EntryEntity e WHERE e.entryStatus = io.github.LuizYokoyama.BankAccount.entity.EntryStatus.DONE " +
+            " AND e.entryDateTime >= :lastTime AND e.accountEntity = :account" )
+    Float aggregateBalanceSince(@Param("lastTime") LocalDateTime lastTime, @Param("account") AccountEntity account);
 
 }

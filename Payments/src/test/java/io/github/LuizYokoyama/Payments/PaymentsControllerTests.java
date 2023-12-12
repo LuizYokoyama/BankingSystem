@@ -1,7 +1,6 @@
 package io.github.LuizYokoyama.Payments;
 
 import io.github.LuizYokoyama.Payments.controller.PaymentsController;
-import io.github.LuizYokoyama.Payments.entity.RecurrenceStatus;
 import io.github.LuizYokoyama.Payments.repository.RecurrenceRepository;
 import org.hibernate.LazyInitializationException;
 import org.junit.jupiter.api.*;
@@ -44,9 +43,9 @@ public class PaymentsControllerTests {
     @Autowired
     RecurrenceRepository recurrenceRepository;
 
-    public static final String PATH_DB_INIT = "src/test/resources/db_init.sql";
+    public static final String PATH_DB_INIT = "src/test/resources/__db_init.sql";
     public static final String PATH_DB_INIT_SWAP = "src/test/resources/db_init_swap.sql";
-    public static final String DB_INIT = "db_init.sql";
+    public static final String DB_INIT = "__db_init.sql";
     public static final String DB_NAME = "test_bk";
     public static final String ADMIN = "admin";
     public static final String PASSWORD = "admin";

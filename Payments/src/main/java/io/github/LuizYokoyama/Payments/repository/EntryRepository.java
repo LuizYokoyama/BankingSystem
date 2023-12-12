@@ -21,9 +21,12 @@ public interface EntryRepository extends JpaRepository<EntryEntity, UUID> {
             " ORDER BY e.entryDateTime")
     List<EntryDto> getStatement(@Param("id") Integer id, @Param("initDate") LocalDateTime initDate, @Param("endDate") LocalDateTime endDate);
 
-    @Query("SELECT SUM(e.value) " +
-            "FROM EntryEntity e WHERE e.entryStatus = io.github.LuizYokoyama.Payments.entity.EntryStatus.DONE " +
-            " AND e.entryDateTime >= :lastTime AND e.accountEntity = :account" )
-    Float aggregateBalanceSince(@Param("lastTime") LocalDateTime lastTime, @Param("account") AccountEntity account);
+    @Query("""
+            SELECT SUM(e.value) 
+            FROM EntryEntity e JOIN e.accountEntity a 
+            WHERE e.entryStatus = io.github.LuizYokoyama.Payments.entity.EntryStatus.DONE 
+            AND e.entryDateTime >= a.aggregationDateTime AND a.accountId = :accountId
+            """ )
+    Float aggregateBalanceSince(@Param("accountId") int accountId);
 
 }

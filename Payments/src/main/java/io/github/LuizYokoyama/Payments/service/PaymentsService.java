@@ -148,10 +148,10 @@ public class PaymentsService {
     private float getBalance(AccountEntity account){
 
         float lastAggregatedBalance = account.getAggregatedBalance();
-        LocalDateTime lastTime = account.getAggregationDateTime();
+
         Float newAggregatedBalance;
         try {
-            newAggregatedBalance = entryRepository.aggregateBalanceSince(lastTime, account);
+            newAggregatedBalance = entryRepository.aggregateBalanceSince(account.getAccountId());
         }catch (Exception ex){
             throw new DataBaseException("Falha ao buscar o saldo da conta!", ex.getCause());
         }
@@ -165,15 +165,12 @@ public class PaymentsService {
 
     private Float aggregate(AccountEntity account){
 
-        LocalDateTime lastTime = account.getAggregationDateTime();
-        Float aggregated;
         try {
-            aggregated = entryRepository.aggregateBalanceSince(lastTime, account);
+            return entryRepository.aggregateBalanceSince(account.getAccountId());
         }catch (Exception ex){
             throw new DataBaseException("Falha ao buscar o saldo da conta!", ex.getCause());
         }
 
-        return aggregated;
     }
 
 }

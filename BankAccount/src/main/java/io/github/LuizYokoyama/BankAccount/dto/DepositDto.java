@@ -4,6 +4,8 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -11,6 +13,6 @@ import lombok.*;
 public class DepositDto {
 
     @Positive(message = "Forneça um valor positivo positivo!")
-    private float value;
+    private BigDecimal value;
 
 }

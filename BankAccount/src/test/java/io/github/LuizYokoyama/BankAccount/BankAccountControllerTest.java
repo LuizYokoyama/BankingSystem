@@ -24,6 +24,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -70,8 +71,8 @@ public class BankAccountControllerTest {
     static {
         CREATE_ACCOUNT_DTO = new CreateAccountDto("Name Test");
         CREATE_RECURRENCE_DTO_WITHOUT_NAME = new CreateAccountDto("");
-        DEPOSIT_DTO = new DepositDto(14f);
-        DEPOSIT_DTO_WITHOUT_VALUE = new DepositDto(0);
+        DEPOSIT_DTO = new DepositDto(BigDecimal.TEN);
+        DEPOSIT_DTO_WITHOUT_VALUE = new DepositDto(BigDecimal.ZERO);
         PERIOD_DTO = new PeriodDto(LocalDate.now(), LocalDate.now());
         PERIOD_DTO_WITHOUT_DATE = new PeriodDto(null, LocalDate.now());
 

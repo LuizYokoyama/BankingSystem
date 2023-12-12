@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @NoArgsConstructor
@@ -26,6 +27,6 @@ public class EditRecurrenceDto implements IRecurrenceDto{
     private int monthsDuration;
 
     @Positive
-    private float value;
+    private BigDecimal value;
 
 }

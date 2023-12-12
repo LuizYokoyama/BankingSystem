@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -27,7 +28,7 @@ public class AccountEntity {
     private String holderName;
 
     @Column(name = "aggregated_balance", nullable = false)
-    private float balance;
+    private BigDecimal balance;
 
     @Column(name = "aggregation_date_time", nullable = false)
     private LocalDateTime entryDateTime;

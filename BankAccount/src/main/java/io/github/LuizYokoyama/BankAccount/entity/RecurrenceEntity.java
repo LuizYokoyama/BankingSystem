@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Set;
 import java.util.UUID;
@@ -39,7 +40,7 @@ public class RecurrenceEntity {
     private int monthsDuration;
 
     @Column(name = "value", nullable = false)
-    private float value;
+    private BigDecimal value;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore

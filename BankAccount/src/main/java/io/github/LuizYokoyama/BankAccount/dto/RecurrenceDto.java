@@ -3,6 +3,7 @@ package io.github.LuizYokoyama.BankAccount.dto;
 import io.github.LuizYokoyama.BankAccount.entity.RecurrenceStatus;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -24,7 +25,7 @@ public class RecurrenceDto {
 
     private int monthsDuration;
 
-    private float value;
+    private BigDecimal value;
 
     private int accountDestinationID;
 

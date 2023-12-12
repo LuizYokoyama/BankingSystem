@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -196,7 +197,7 @@ public class SchedularService {
             entryEntityToDebit.setAccountEntity(accountEntity); //will send the amount
             entryEntityToDebit.setOriginEntity(accountDestinationEntity); //will receive the amount
             entryEntityToDebit.setEntryDateTime(entryDate);
-            entryEntityToDebit.setValue( - recurrenceDto.getValue());
+            entryEntityToDebit.setValue( recurrenceDto.getValue().negate());
             entryEntityToDebit.setOperationType(OperationType.DEBIT);
             entryEntityToDebit.setEntryStatus(EntryStatus.PENDING);
             try {
@@ -237,7 +238,7 @@ public class SchedularService {
 
     private void validateRecurrence(IRecurrenceDto recurrence){
 
-        if (recurrence.getValue() == 0){
+        if (recurrence.getValue().compareTo(BigDecimal.ZERO) == 0){
             throw new ValueZeroRuntimeException("Forneça um valor maior que zero!");
         }
 

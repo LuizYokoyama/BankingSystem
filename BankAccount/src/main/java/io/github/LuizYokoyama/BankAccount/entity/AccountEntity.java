@@ -3,6 +3,7 @@ package io.github.LuizYokoyama.BankAccount.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -26,7 +27,7 @@ public class AccountEntity {
     private String holderName;
 
     @Column(name = "aggregated_balance", nullable = false)
-    private float aggregatedBalance;
+    private BigDecimal aggregatedBalance;
 
     @Column(name = "aggregation_date_time", nullable = false)
     private LocalDateTime aggregationDateTime;

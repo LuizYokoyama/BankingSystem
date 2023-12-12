@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -30,7 +31,7 @@ public class CreateRecurrenceDto implements IRecurrenceDto{
     private int monthsDuration;
 
     @Positive
-    private float value;
+    private BigDecimal value;
 
     @Positive
     private int accountDestinationID;

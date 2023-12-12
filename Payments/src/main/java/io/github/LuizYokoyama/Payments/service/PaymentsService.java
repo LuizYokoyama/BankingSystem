@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Iterator;
@@ -82,9 +83,9 @@ public class PaymentsService {
 
         AccountEntity accountDebit = entryDebit.getAccountEntity();
 
-        float balance = getBalance(accountDebit);
+        BigDecimal balance = getBalance(accountDebit);
 
-        if (balance < entryDebit.getValue()){
+        if (balance.compareTo(entryDebit.getValue()) < 0){
             return false;
         }
 
@@ -127,13 +128,13 @@ public class PaymentsService {
     @Transactional
     private boolean aggregateBalance(AccountEntity account) {
 
-        Float aggregated;
+        BigDecimal aggregated;
 
         aggregated = aggregate(account);
         if (aggregated == null){
             return false;
         }
-        account.setAggregatedBalance(aggregated + account.getAggregatedBalance());
+        account.setAggregatedBalance(account.getAggregatedBalance().add(aggregated));
         account.setAggregationDateTime(LocalDateTime.now());
 
         try {
@@ -145,11 +146,11 @@ public class PaymentsService {
 
     }
 
-    private float getBalance(AccountEntity account){
+    private BigDecimal getBalance(AccountEntity account){
 
-        float lastAggregatedBalance = account.getAggregatedBalance();
+        BigDecimal lastAggregatedBalance = account.getAggregatedBalance();
 
-        Float newAggregatedBalance;
+        BigDecimal newAggregatedBalance;
         try {
             newAggregatedBalance = entryRepository.aggregateBalanceSince(account.getAccountId());
         }catch (Exception ex){
@@ -160,10 +161,10 @@ public class PaymentsService {
             return lastAggregatedBalance;
         }
 
-        return lastAggregatedBalance + newAggregatedBalance;
+        return lastAggregatedBalance.add(newAggregatedBalance);
     }
 
-    private Float aggregate(AccountEntity account){
+    private BigDecimal aggregate(AccountEntity account){
 
         try {
             return entryRepository.aggregateBalanceSince(account.getAccountId());

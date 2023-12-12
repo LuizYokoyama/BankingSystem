@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -42,7 +43,7 @@ public class EntryEntity {
     private OperationType operationType;
 
     @Column(name = "value", nullable = false)
-    private float value;
+    private BigDecimal value;
 
     @Column(name = "entry_date", nullable = false)
     private LocalDateTime entryDateTime;

@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,6 +25,6 @@ public class AccountCreatedDto {
     @Size(max = NAME_MAX_SIZE)
     private String holderName;
 
-    private float balance;
+    private BigDecimal balance;
 
 }

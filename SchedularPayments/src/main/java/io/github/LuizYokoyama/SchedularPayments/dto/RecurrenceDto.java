@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Set;
 import java.util.UUID;
@@ -33,7 +34,7 @@ public class RecurrenceDto implements IRecurrenceDto{
     @Max(MAX_DURATION)
     private int monthsDuration;
 
-    private float value;
+    private BigDecimal value;
 
     @Min(1)
     private int accountDestinationID;

@@ -3,7 +3,7 @@
 CREATE TABLE IF NOT EXISTS public.tb_account
 (
     account_id serial NOT NULL,
-    aggregated_balance real NOT NULL,
+    aggregated_balance numeric NOT NULL,
     aggregation_date_time timestamp(6) without time zone NOT NULL,
     holder_name character varying(42) NOT NULL,
     CONSTRAINT tb_account_pkey PRIMARY KEY (account_id)
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS public.tb_recurrence
     recurrence_date date NOT NULL,
     recurrence_duration integer NOT NULL,
     status smallint NOT NULL,
-    value real NOT NULL,
+    value numeric NOT NULL,
     recurrence_id uuid NOT NULL,
     recurrence_name character varying(32) NOT NULL,
     CONSTRAINT tb_recurrence_pkey PRIMARY KEY (recurrence_id),
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS public.tb_entry
     operation_type smallint NOT NULL,
     origin_id integer,
     status smallint NOT NULL,
-    value real NOT NULL,
+    value numeric NOT NULL,
     entry_date timestamp(6) without time zone NOT NULL,
     entry_id uuid NOT NULL,
     recurrence_id uuid,

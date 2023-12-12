@@ -1,5 +1,6 @@
 package io.github.LuizYokoyama.SchedularPayments.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public interface IRecurrenceDto {
@@ -16,9 +17,9 @@ public interface IRecurrenceDto {
 
     public void setMonthsDuration(int duration);
 
-    public float getValue();
+    public BigDecimal getValue();
 
-    public void setValue(float value);
+    public void setValue(BigDecimal value);
 
 
 }

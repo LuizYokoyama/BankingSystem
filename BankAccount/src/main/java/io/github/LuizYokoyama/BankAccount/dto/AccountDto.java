@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 @NoArgsConstructor
@@ -24,7 +25,7 @@ public class AccountDto {
     @Size(max = NAME_MAX_SIZE)
     private String holderName;
 
-    private float aggregatedBalance;
+    private BigDecimal aggregatedBalance;
 
     private Set<RecurrenceDto> recurrenceList;
 

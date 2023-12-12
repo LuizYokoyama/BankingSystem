@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +27,7 @@ import java.util.Optional;
 @Validated
 public class AccountService {
 
-    private static final float MIN_DEPOSIT_VALUE = 0.01f;
+    private static final BigDecimal MIN_DEPOSIT_VALUE = new BigDecimal(0.01);
     @Autowired
     private AccountRepository accountRepository;
 
@@ -39,7 +40,7 @@ public class AccountService {
         AccountEntity accountEntity = new AccountEntity();
         BeanUtils.copyProperties(accountDto, accountEntity);
         accountEntity.setAggregationDateTime(LocalDateTime.now());
-        accountEntity.setAggregatedBalance(0);
+        accountEntity.setAggregatedBalance(BigDecimal.ZERO);
 
         try {
             accountEntity = accountRepository.save(accountEntity);
@@ -56,7 +57,7 @@ public class AccountService {
     @Transactional
     public EntryDto deposit(Integer id, @Valid DepositDto depositDto) {
 
-        if (depositDto.getValue() < MIN_DEPOSIT_VALUE){
+        if (depositDto.getValue() == null){
             throw new ValueZeroRuntimeException("Forneça um valor maior que zero!");
         }
 
@@ -90,7 +91,7 @@ public class AccountService {
     public BankStatementDto statement(Integer id, @Valid PeriodDto periodDto) {
 
         AccountEntity accountEntity = findAccount(id);
-        float balance = getBalance(accountEntity);
+        BigDecimal balance = getBalance(accountEntity);
         AccountCreatedDto accountCreatedDto = new AccountCreatedDto();
         BeanUtils.copyProperties(accountEntity, accountCreatedDto);
         accountCreatedDto.setBalance(balance);
@@ -122,13 +123,12 @@ public class AccountService {
         return accountEntityOptional.get();
     }
 
-    private float getBalance(AccountEntity account){
+    private BigDecimal getBalance(AccountEntity account){
 
-        float lastAggregatedBalance = account.getAggregatedBalance();
-        LocalDateTime lastTime = account.getAggregationDateTime();
-        Float newAggregatedBalance;
+        BigDecimal lastAggregatedBalance = account.getAggregatedBalance();
+        BigDecimal newAggregatedBalance;
         try {
-            newAggregatedBalance = entryRepository.aggregateBalanceSince(lastTime, account);
+            newAggregatedBalance = entryRepository.aggregateBalanceSince(account.getAccountId());
         }catch (Exception ex){
             throw new DataBaseException("Falha ao buscar o saldo da conta!", ex.getCause());
         }
@@ -137,7 +137,7 @@ public class AccountService {
             return lastAggregatedBalance;
         }
 
-        return lastAggregatedBalance + newAggregatedBalance;
+        return lastAggregatedBalance.add(newAggregatedBalance);
     }
 
 }

@@ -20,6 +20,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -61,12 +62,12 @@ public class SchedularPaymentsControllerTests {
 
     static {
         CREATE_RECURRENCE_DTO = new CreateRecurrenceDto(1, "Test", LocalDate.now(),
-                                                        2, 5.1f, 2);
+                                                        2, BigDecimal.TEN, 2);
         CREATE_RECURRENCE_DTO_ACCOUNT_NON_EXIST = new CreateRecurrenceDto(5, "Test", LocalDate.now(),
-                                                                            2, 5.1f, 1);
+                                                                            2, BigDecimal.TEN, 1);
         CREATE_RECURRENCE_DTO_TO_SAME_ACCOUNT = new CreateRecurrenceDto(1, "Test", LocalDate.now(),
-                2, 5.1f, 1);
-        EDIT_RECURRENCE_DTO = new EditRecurrenceDto(LocalDate.now(), 3, 22f );
+                2, BigDecimal.TEN, 1);
+        EDIT_RECURRENCE_DTO = new EditRecurrenceDto(LocalDate.now(), 3, BigDecimal.TEN );
 
         ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
         try {

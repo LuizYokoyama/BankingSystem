@@ -4,6 +4,7 @@ import io.github.LuizYokoyama.SchedularPayments.entity.EntryStatus;
 import io.github.LuizYokoyama.SchedularPayments.entity.OperationType;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -23,7 +24,7 @@ public class EntryDto {
 
     private OperationType operationType;
 
-    private float value;
+    private BigDecimal value;
 
     private LocalDateTime entryDateTime;
 
